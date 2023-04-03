@@ -37,6 +37,11 @@ if(file_exists($manager = ROOTPATH . 'routes/manager.php')) {
     require $manager;
 }
 
+//Rotas para a dashboard
+if(file_exists($dashboard = ROOTPATH . 'routes/dashboard.php')) {
+    require $dashboard;
+}
+
 //Rotas para a API REST
 if(file_exists($api = ROOTPATH . 'routes/manager.php')) {
     require $api;
@@ -45,11 +50,6 @@ if(file_exists($api = ROOTPATH . 'routes/manager.php')) {
 //Rotas do auth package
 \Fluent\Auth\Facades\Auth::routes();
 
-$routes->group('dashboard', ['filter' => 'auth:web'], function ($routes) {
-    $routes->get('/', 'Home::dashboard', ['filter' => 'verified']);
-    $routes->get('confirm', 'Home::confirm', ['filter' => 'confirm']);
-});
-////// REMOVER ISSO
 
 /*
  * --------------------------------------------------------------------
