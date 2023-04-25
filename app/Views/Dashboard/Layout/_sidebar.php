@@ -14,7 +14,12 @@
         <!-- Dashboard Links -->
         <div class="widget user-dashboard-menu">
             <ul>
-                <li class="active"><a href=""><i class="fa fa-user"></i> My Ads</a></li>
+                <li class="<?php echo url_is("{$locale}/dashboard") ? 'active' : '';?>">
+                    <a href="<?php echo route_to('dashboard'); ?>"><i class="fa fa-home"></i><?php echo lang('App.sidebar.dashboard.dashboard'); ?></a>
+                </li>
+                <li class="<?php echo url_is("{$locale}/dashboard/adverts/my") ? 'active' : '';?>">
+                    <a href="<?php echo route_to('my.adverts'); ?>"><i class="fa fa-user"></i><?php echo lang('App.sidebar.dashboard.my_adverts'); ?></a>
+                </li>
                 <li><a href=""><i class="fa fa-bookmark-o"></i> Favourite Ads <span>5</span></a></li>
                 <li><a href=""><i class="fa fa-file-archive-o"></i>Archived Ads <span>12</span></a></li>
                 <li><a href=""><i class="fa fa-bolt"></i> Pending Approval<span>23</span></a></li>

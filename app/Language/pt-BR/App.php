@@ -34,5 +34,10 @@ return [
             'plans'             => 'Planos de Assinaturas',
         ],
 
+        'dashboard' => [
+            'dashboard'         => 'Principal',
+            'my_adverts'        => 'Meus anúncios'
+        ],
+
     ],
 ];
