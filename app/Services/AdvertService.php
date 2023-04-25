@@ -40,6 +40,20 @@ class AdvertService
         $baseRouteToQuestions  = $this->user->isSuperadmin() ? 'adverts.manager.edit.questions' : 'adverts.my.edit.questions';
 
         foreach($adverts as $advert) {
+
+            // É para exibir o botão?
+            if($showBtnArchive) {
+                // Sim
+                $btnArchive = form_button(
+                    [
+                        'data-id' => $advert->id,
+                        'id'      => 'btnArchiveAdvert', //ID do html element
+                        'class'   => 'dropdown-item'
+                    ],
+                    lang('App.btn_archived')
+                );
+            }
+
             $btnEdit = form_button(
                 [
                     'data-id' => $advert->id,
@@ -59,6 +73,40 @@ class AdvertService
                 lang('Adverts.btn_edit_images')
             );
             
+            // O botão é para ser exibido e o anúncio está publicado?
+            if($showBtnViewAdvert && $advert->is_published) {
+
+                // Sim...podemos montar o botão ação
+
+                $routeToViewAdvert = route_to('adverts.details', $advert->code);
+
+                $btnViewAdvert = form_button(
+                    [
+                        'class'   => 'dropdown-item',
+                        'onClick' => "window.open('{$routeToViewAdvert}', '_blank')",
+                    ],
+                    lang('Adverts.btn_view_advert')
+                );
+
+            }
+            
+            // O botão é para ser exibido e o anúncio está publicado?
+            if($showBtnQuestion && $advert->is_published) {
+
+                // Sim...podemos montar o botão ação
+
+                $finalRouteToEditQuestions = route_to($baseRouteToQuestions, $advert->code);
+
+                $btnViewQuestions = form_button(
+                    [
+                        'class'   => 'dropdown-item',
+                        'onClick' => "location.href='{$finalRouteToEditQuestions}'"
+                    ],
+                    lang('Adverts.btn_view_questions')
+                );
+
+            }
+
             // Comaçamos a montar o botão de ações do dropdown
 
             $btnActions = '<div class="dropdown dropup">'; //abertura da div do dropdown
@@ -77,8 +125,30 @@ class AdvertService
 
             $btnActions .= '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">'; // abertura da div do dropdown menu
 
+            // Criamos as opções de botões(ações)
             $btnActions .= $btnEdit;
             $btnActions .= $btnEditImages;
+
+            // O botão é para ser exibido e o anúncio está publicado?
+            if($showBtnViewAdvert && $advert->is_published) {
+
+                // Sim...podemos montar o botão ação
+                $btnActions .= $btnViewAdvert;
+            }
+
+            // O botão é para ser exibido e o anúncio está publicado?
+            if($showBtnQuestion && $advert->is_published) {
+
+                // Sim...podemos montar o botão ação
+                $btnActions .= $btnViewQuestions;
+                
+            }
+
+            // É para exibir o botão?
+            if($showBtnArchive) {
+                // Sim
+                $btnActions .= $btnArchive;
+            }
 
             $btnActions .= '</div>'; //fechamento da div do dropdown-menu
 

@@ -27,10 +27,9 @@ class AdvertsUserController extends BaseController
         }
 
         $response = [
-            'data' => $this->advertService->getAllAdverts(),
+            'data' => $this->advertService->getAllAdverts(classBtnAction: 'btn btn-sm btn-outline-primary'),
         ];
     
-
         return $this->response->setJSON($response);
     }
 }

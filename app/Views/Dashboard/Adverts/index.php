@@ -16,6 +16,15 @@
 	#dataTable_filter .form-control {
 		height: 30px !important;
 	}
+
+	/**
+	* Criamos a classe .modal-xl que não tem nessa versão do bootstrap do template
+	*/
+	@media (min-width: 1200px) {
+		.modal-xl {
+			max-width: 1140px;
+		}
+	}
 </style>
 
 <?= $this->endSection() ?>
@@ -63,6 +72,8 @@
 	<!-- Container End -->
 </section>
 
+<?php echo $this->include('Dashboard/Adverts/_modal_advert') ?>
+
 <?= $this->endSection() ?>
 
 <!--Envio para o template principal os arquivos scrpits dessa view-->
@@ -70,7 +81,12 @@
 
 <script src="https://cdn.datatables.net/v/bs4/dt-1.13.4/r-2.4.1/datatables.min.js"></script>
 
+<script src="<?php echo site_url('manager_assets/mask/jquery.mask.min.js')?>"></script>
+<script src="<?php echo site_url('manager_assets/mask/app.js')?>"></script>
+
 <?php echo $this->include('Dashboard/Adverts/Scripts/_datatable_all') ?>
+<?php echo $this->include('Dashboard/Adverts/Scripts/_get_my_advert') ?>
+<?php echo $this->include('Dashboard/Adverts/Scripts/_show_modal_to_create') ?>
 
 <script>
 	function refreshCSRFToken(token) {

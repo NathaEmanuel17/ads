@@ -50,6 +50,7 @@ return [
     'label_neighborhood'    => 'Bairro do anúncio',
     'label_city'            => 'Cidade do anúncio',
     'label_state'           => 'Estado do anúncio',
+    'label_number'          => 'Número',
 
 
     // Validation messages
