@@ -18,9 +18,6 @@
             $('#boxParents').html(response.parents);
 
         }, 'json');
-    })
+    });
 
-    $(document).on('click', '#btnCancel', function() {
-        $('input[name="_method"]').remove();
-    })
 </script>

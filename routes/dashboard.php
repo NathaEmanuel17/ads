@@ -12,5 +12,7 @@ $routes->group('{locale}/dashboard', ['namespace' => 'App\Controllers\Dashboard'
 
         $routes->get('my', 'AdvertsUserController::index', ['as' => 'my.adverts']);
         $routes->get('get-all-my-adverts', 'AdvertsUserController::getUserAdverts', ['as' => 'get.all.my.Adverts']);
+        $routes->get('get-my-advert', 'AdvertsUserController::getUserAdvert', ['as' => 'get.my.advert']);
+        $routes->put('update', 'AdvertsUserController::updateUserAdvert', ['as' => 'adverts.update.my']);
     });    
 });

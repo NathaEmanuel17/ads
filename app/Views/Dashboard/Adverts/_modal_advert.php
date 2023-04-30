@@ -9,7 +9,7 @@
                 </button>
             </div>
 
-            <?php echo form_open(route_to('adverts.create'), ['id' => 'adverts-form'], ['id' => '']); ?>
+            <?php echo form_open(route_to('adverts.create.my'), ['id' => 'adverts-form'], ['id' => '']); ?>
 
             <div class="modal-body">
 
@@ -29,7 +29,7 @@
                         
                         <!-- Será preenchido pelo javascript -->
                         
-                        <div class="boxSituations">
+                        <div id="boxSituations">
 
                         </div>
 
@@ -43,7 +43,7 @@
                         
                         <!-- Será preenchido pelo javascript -->
                         
-                        <div class="boxCategories">
+                        <div id="boxCategories">
         
                         </div>
 

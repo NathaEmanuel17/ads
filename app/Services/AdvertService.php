@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Entities\Advert;
 use App\Models\AdvertModel;
 use CodeIgniter\Config\Factories;
 
@@ -167,6 +168,69 @@ class AdvertService
         }
 
         return $data;
+    }
+
+    public function getAdvertByID(int $id, bool $withDeleted = false)
+    {
+        $advert = $this->advertModel->getAdvertByID($id, $withDeleted);
+
+        if(is_null($advert)) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Advert not found');
+        }
+
+        return $advert;
+    }
+
+    public function getDropdownSituations(string $advertSituation = null)
+    {
+        $options   = [];
+        $selected  = [];
+
+        $options = [
+            ''                     =>lang('Adverts.label_situation'), //option vazio
+            self::SITUATION_NEW    =>lang('Adverts.text_new'), 
+            self::SITUATION_USED   =>lang('Adverts.text_used'),
+        ];
+
+        // Estamos criando ou editando um anúncio
+        if(is_null($advertSituation)) {
+
+            // Estamos criando...
+
+            return form_dropdown('situation', $options, $selected, ['class' => 'form-control']);
+        }
+
+        //Estamos editando um anúncio...
+
+        $selected[] = match($advertSituation) {
+            self::SITUATION_NEW     => self::SITUATION_NEW,
+            self::SITUATION_USED    => self::SITUATION_USED,
+            default                 => throw new \Exception("Unsupported {$advertSituation}"),
+        };
+
+        return form_dropdown('situation', $options, $selected, ['class' => 'form-control']);
+    }
+
+    public function trySaveAdvert(Advert $advert, bool $protect = true, bool $notifyUserIfPublished = false)
+    {
+
+        try {
+            
+            $advert->unsetAuxiliaryAttributes();
+
+            if($advert->hasChanged()) {
+                $this->advertModel->trySaveAdvert($advert, $protect);
+
+                /**
+                 * @todo disparar eventos de notificação para o anunciante e o manager
+                 */
+            }
+
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+
+            die('Error saving data');
+        }
     }
 }
 ?>

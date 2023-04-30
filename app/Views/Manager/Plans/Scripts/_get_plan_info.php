@@ -1,18 +1,17 @@
 <script>
-
     $(document).on('click', '#updatePlanBtn', function() {
 
-        var id  = $(this).data('id');
+        var id = $(this).data('id');
         var url = '<?php echo route_to('plans.get.info'); ?>';
 
-        $.get(url , {
+        $.get(url, {
 
             id: id
         }, function(response) {
 
             $('#modalPlan').modal('show');
 
-            $('.modal-title').text('<?php echo lang('Plans.title_edit')?>'); //mudaremos depois com o lang
+            $('.modal-title').text('<?php echo lang('Plans.title_edit') ?>'); //mudaremos depois com o lang
             $('#plans-form').attr('action', '<?php echo route_to('plans.update'); ?>');
             $('#plans-form').find('input[name="id"]').val(response.plan.id);
             $('#plans-form').find('input[name="name"]').val(response.plan.name);
@@ -26,7 +25,10 @@
             $('#boxRecorrences').html(response.recorrences);
             $('#plans-form').find('span.error-text').text('');
 
-        }, 'json');
-    })
+        }, 'json').fail(function() {
 
+            toastr.error('Erro backend');
+
+        });
+    })
 </script>

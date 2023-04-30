@@ -13,6 +13,13 @@
 <link href="https://cdn.datatables.net/v/bs4/dt-1.13.4/r-2.4.1/datatables.min.css" rel="stylesheet" />
 
 <style>
+	/**
+	* Para acompanhar o estilo dos inputs
+	*/
+	select {
+		height: 50px !important;
+	}
+
 	#dataTable_filter .form-control {
 		height: 30px !important;
 	}
@@ -87,6 +94,7 @@
 <?php echo $this->include('Dashboard/Adverts/Scripts/_datatable_all') ?>
 <?php echo $this->include('Dashboard/Adverts/Scripts/_get_my_advert') ?>
 <?php echo $this->include('Dashboard/Adverts/Scripts/_show_modal_to_create') ?>
+<?php echo $this->include('Dashboard/Adverts/Scripts/_submit_modal_create_update') ?>
 
 <script>
 	function refreshCSRFToken(token) {

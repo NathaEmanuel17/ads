@@ -6,7 +6,7 @@ return  [
     'title_edit'   => 'Editar cateforia',
 
     'label_name'            => 'Nome',
-    'label_choose_category' => 'Escolha uma categoria...',
+    'label_choose_category' => '--- Escolha uma categoria ---',
     'label_slug'            => 'Slug',
     'label_parent_name'     => 'Categoria Pai',
 
