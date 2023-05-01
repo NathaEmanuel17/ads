@@ -62,4 +62,9 @@ class UserModel extends Model implements UserProviderInterface
             'password' => 'secret',
         ];
     }
+
+    public function getSuperadmin()
+    {
+        return $this->join('superadmins', 'superadmins.user_id = users.id')->first();
+    }
 }

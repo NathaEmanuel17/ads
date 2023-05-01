@@ -55,3 +55,13 @@ Events::on(\Fluent\Auth\Contracts\VerifyEmailInterface::class, function ($email)
 Events::on(\Fluent\Auth\Contracts\ResetPasswordInterface::class, function ($email, $token) {
     (new \App\Notifications\ResetPasswordNotification($email, $token))->send();
 });
+
+
+// Nossos eventos 
+Events::on('nofity_user_advert', function($email, $message) {
+    (new \App\Notifications\UserAdvertNotification($email, $message))->send();
+});
+
+Events::on('nofity_manager', function($message) {
+    (new \App\Notifications\ManagerNotification($message))->send();
+});

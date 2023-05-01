@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Entities\Advert;
 use App\Models\AdvertModel;
 use CodeIgniter\Config\Factories;
-
+use CodeIgniter\Events\Events; // para disparar eventos
 class AdvertService
 {
     private $user;
@@ -221,9 +221,7 @@ class AdvertService
             if($advert->hasChanged()) {
                 $this->advertModel->trySaveAdvert($advert, $protect);
 
-                /**
-                 * @todo disparar eventos de notificação para o anunciante e o manager
-                 */
+                $this->fireAdvertEvents($advert, $notifyUserIfPublished);
             }
 
         } catch (\Exception $e) {
@@ -231,6 +229,21 @@ class AdvertService
 
             die('Error saving data');
         }
+    }
+
+    private function fireAdvertEvents(Advert $advert, bool $notifyUserIfPublished)
+    {
+        // Se estiver sendo editado, então o email já possui valor quando da recuperação do mesmo da base.
+        // Se não tem valor, então estamos criando novo anúncio, portanti, recebe o e-mail do user logado.
+        $advert->email = !empty($advert->email) ? $advert->email : $this->user->email;
+
+        if($advert->hasChanged('title') || $advert->hasChanged('description')) {
+            Events::trigger('nofity_user_advert', $advert->email, "Estamos analisando o seu anúncio {$advert->code}, aguarde...");
+            Events::trigger('nofity_manager', "Existem anúncios para serem auditados.");
+        }
+        /**
+         * @todo notificar o usuário/anunciante de que o anúncio foi publicado
+         */
     }
 }
 ?>

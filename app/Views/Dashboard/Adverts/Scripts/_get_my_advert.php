@@ -30,20 +30,12 @@
 
 
             $('#adverts-form').find('span.error-text').text('');
+            $('#adverts-form').find('input[name="price"]').addClass('money');
 
         }, 'json').fail(function() {
 
             toastr.error("We couldn't find the ad");
 
         });;
-
-
-        // $('input[name="id"]').val(''); // limpamos o id
-        // $('input[name="_method"]').remove(''); // removemos o spoofing
-        // $('#adverts-form')[0].reset();
-        // $('#adverts-form').attr('action', '<?php echo route_to('adverts.create'); ?>');
-        // $('#adverts-form').find('span.error-text').text('');
-
-        // TODO: fazer o ajax request para buscar as situações e categorias
     });
 </script>

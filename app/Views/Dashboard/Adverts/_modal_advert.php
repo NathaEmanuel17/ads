@@ -111,7 +111,7 @@
 
                         <label for="description" class="form-label"><?php echo lang('Adverts.label_description'); ?></label>
                         
-                        <textarea name="description" style="min-height: 100px;" class="form-control"><?php echo lang('Adverts.label_description'); ?></textarea>
+                        <textarea name="description" style="min-height: 100px;" class="form-control" placeholder="<?php echo lang('Adverts.label_description'); ?>"></textarea>
 
                         <span class="text-danger error-text description"></span>
 

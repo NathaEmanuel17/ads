@@ -3,6 +3,7 @@
 namespace App\Controllers\Dashboard;
 
 use App\Controllers\BaseController;
+use App\Entities\Advert;
 use App\Requests\AdvertRequest;
 use App\Services\AdvertService;
 use App\Services\CategoryService;
@@ -65,6 +66,15 @@ class AdvertsUserController extends BaseController
         return $this->response->setJSON($response);
     }
 
+    public function createUserAdvert()
+    {
+        $this->advertRequest->validateBeforeSave('advert');
+
+        $this->advertService->trySaveAdvert(new Advert($this->removeSpoofingFromRequest()));
+
+        return $this->response->setJSON($this->advertRequest->respondWithMessage(message: lang('App.success_saved')));
+    }
+
     public function updateUserAdvert()
     {
         $this->advertRequest->validateBeforeSave('advert');
@@ -78,4 +88,28 @@ class AdvertsUserController extends BaseController
         return $this->response->setJSON($this->advertRequest->respondWithMessage(message: lang('App.success_saved')));
 
     }
+
+    public function getCategoriesEndSituations()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        
+        $options = [
+            'class'       => 'form-control',
+            'placeholder' => lang('Categories.label_choose_category'),
+            'selected'    => ''
+        ];
+
+
+
+        $response = [
+            'situations'  => $this->advertService->getDropdownSituations(),
+            'categories'  => $this->categoryService->getMultinivel('category_id', $options)
+        ];
+
+        return $this->response->setJSON($response);
+    }
+    
 }
