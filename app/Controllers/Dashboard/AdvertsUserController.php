@@ -111,5 +111,16 @@ class AdvertsUserController extends BaseController
 
         return $this->response->setJSON($response);
     }
+
+    public function editUserAdvertImages(int $id = null)
+    {
+        $data = [
+            'advert'        => $this->advertService->getAdvertByID($id),
+            'hiddens'       => ['_method' => 'PUT'],    // Para o upload de imagens (editando um anúncio)
+            'hiddensDelete' => ['_method' => 'DELETE'], // Para remover as imagens do anuncio
+        ];
+
+        return view('Dashboard/Adverts/edit_images', $data);
+    }
     
 }

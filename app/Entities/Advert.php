@@ -48,6 +48,10 @@ class Advert extends Entity
 
     public function address()
     {
-        return 'Endereço';
+
+        $number = !empty($this->attributes['number']) ? $this->attributes['number'] : 'N/A';
+
+        return "{$this->attributes['street']} - {$number} - {$this->attributes['neighborhood']} - {$this->attributes['zipcode']} - {$this->attributes['city']} - {$this->attributes['state']}";
     }
+
 }
