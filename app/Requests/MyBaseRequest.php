@@ -33,7 +33,7 @@ class MyBaseRequest
     private function respondeWithRedirect()
     {
         redirect()->back()->with('danger', lang('App.danger_validations'))
-                        ->with('errors_model', $this->validation->getErros())
+                        ->with('errors_model', $this->validation->getErrors())
                         ->withInput()
                         ->send();
         exit; // não esquecer do exit

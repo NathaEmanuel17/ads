@@ -231,6 +231,23 @@ class AdvertService
         }
     }
 
+    public function tryStoreAdvertImages(array $images, int $advertID) 
+    {
+
+        try {
+            $advert = $this->getAdvertByID($advertID);
+
+            $dataImages = ImageService::storeImages($images, 'adverts', 'advert_id', $advert->id);
+        
+            $this->advertModel->tryStoreAdvertImages($dataImages, $advert->id);
+
+            $this->fireAdvertEventForNewImages($advert);
+        } catch (\Exception $e) {
+            //throw $th;
+        }
+
+    }
+
     private function fireAdvertEvents(Advert $advert, bool $notifyUserIfPublished)
     {
         // Se estiver sendo editado, então o email já possui valor quando da recuperação do mesmo da base.
@@ -244,6 +261,15 @@ class AdvertService
         /**
          * @todo notificar o usuário/anunciante de que o anúncio foi publicado
          */
+    }
+    private function fireAdvertEventForNewImages(Advert $advert)
+    {
+        // Se estiver sendo editado, então o email já possui valor quando da recuperação do mesmo da base.
+        // Se não tem valor, então estamos criando novo anúncio, portanti, recebe o e-mail do user logado.
+        $advert->email = !empty($advert->email) ? $advert->email : $this->user->email;
+
+        Events::trigger('nofity_user_advert', $advert->email, "Estamos analisando as novas imagens do seu anúncio {$advert->code}, aguarde...");
+        Events::trigger('nofity_manager', "Existem anúncios para serem auditados, novas imagens foram inseridas...");
     }
 }
 ?>

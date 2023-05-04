@@ -100,4 +100,21 @@ class Validation extends BaseConfig
             'is_unique'  => 'Adverts.title.is_unique',
         ],
     ];
+
+
+    // --------------------------------------------------------------------
+    // Images
+    // --------------------------------------------------------------------
+
+    public $advert_images = [
+        'imagesimages' => [
+            'uploaded[images]',
+            'is_image[images]',
+            'mime_in[images,image/jpg,image/jpeg,image/png,image/webp]',
+            'max_size[images,2048]',
+            'max_dims[images,1920,1080]',
+        ],
+    ];
+
+    public $advert_images_errors = [];
 }
