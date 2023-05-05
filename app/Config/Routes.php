@@ -50,6 +50,7 @@ if(file_exists($api = ROOTPATH . 'routes/manager.php')) {
 //Rotas do auth package
 \Fluent\Auth\Facades\Auth::routes();
 
+$routes->get('image/(:any)/(:any)', 'DetailsController::image/$1/$2', ['as' => 'web.image']);
 
 /*
  * --------------------------------------------------------------------

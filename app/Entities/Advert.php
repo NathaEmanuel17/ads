@@ -35,11 +35,6 @@ class Advert extends Entity
         unset($this->attributes['images']);
     }
 
-    public function image()
-    {
-        return 'imagem';
-    }
-
     public function isPublished()
     {
         return $this->attributes['is_published'] ? '<span class="status-btn active-btn">'. lang('Adverts.text_is_published') .'</span>' : 
@@ -54,4 +49,70 @@ class Advert extends Entity
         return "{$this->attributes['street']} - {$number} - {$this->attributes['neighborhood']} - {$this->attributes['zipcode']} - {$this->attributes['city']} - {$this->attributes['state']}";
     }
 
+    public function image(string $classImage = '', string $sizeImage = 'regular'): string
+    {
+        
+        if(empty($this->attributes['images'])) {
+            return $this->handleWithEmptyImage($classImage);
+        }
+
+        if(is_string($this->attributes['images'])) {
+
+            return $this->handleWithSingleImage($classImage, $sizeImage);
+        }
+
+        if(url_is('api/adverts*')) {
+            return $this->handleWithImagesForAPI();
+        }
+
+    }
+
+    private function handleWithEmptyImage(string $classImage): string
+    {
+        if(url_is('api/adverts*')) {
+
+            return site_url('image/advert-no-image.png');
+        }
+
+        return img(
+            [
+                'src'   => route_to('web.image', 'advert-no-image.png', 'regular'),
+                'alt'   => 'No image yet',
+                'title' => 'No image yet',
+                'class' => $classImage,
+            ]
+        );
+    }
+
+    private function handleWithSingleImage(string $classImage, string $sizeImage): string
+    {
+        if(url_is('api/adverts*')) {
+            return $this->buildRouteForImageAPI($this->attributes['images']);
+        }
+
+        return img(
+            [
+                'src'   => route_to('web.image', $this->attributes['images'], $sizeImage),
+                'alt'   => $this->attributes['title'],
+                'title' => $this->attributes['title'],
+                'class' => $classImage,
+            ]
+        );
+    }
+
+    private function handleWithImagesForAPI(): array
+    {
+        $images = [];
+
+        foreach( $this->attributes['title'] as $image) {
+           
+            $images[] = $this->buildRouteForImageAPI($image->image);
+        }
+        return $images;
+    }
+   
+    private function buildRouteForImageAPI(string $image): string
+    {
+        return site_url("image/{$image}");
+    }
 }

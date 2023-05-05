@@ -127,11 +127,11 @@ class AdvertModel extends MyBaseModel
         }
 
         $builder->join('categories', 'categories.id = adverts.category_id');
-        $builder->join('adverts_images', 'adverts_images.advert_id = adverts.category_id', 'LEFT'); //Nem todos os anuncios terão imagens
+        $builder->join('adverts_images', 'adverts_images.advert_id = adverts.id', 'LEFT'); //Nem todos os anuncios terão imagens
         $builder->groupBy('adverts.id'); // para não repetir registros
         $builder->orderBy('adverts.id', 'DESC');
-
-        return $builder->findAll();
+        
+;       return $builder->findAll();
     }
 
     /**
@@ -216,5 +216,15 @@ class AdvertModel extends MyBaseModel
 
             die('Error saving data');
         }
+    }
+
+    public function tryDeleteAdvertImage(int $advertID, string $image)
+    {
+        $criteria = [
+            'advert_id' => $advertID,
+            'image'     => $image,
+        ];
+
+        return $this->db->table('adverts_images')->where($criteria)->delete();
     }
 }

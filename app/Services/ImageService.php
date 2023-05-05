@@ -34,6 +34,49 @@ class ImageService
         return $uploadedImages;
     }
 
+    public static function showImage(string $imagePath, string $image, string $sizeImage = 'regular') 
+    {
+        if($sizeImage == 'small') {
+
+            $imagePath = WRITEPATH . "uploads/$imagePath/small/$image";
+
+        } else {
+
+            $imagePath = WRITEPATH . "uploads/$imagePath/$image";
+
+        }
+
+        $fileInfo = new \finfo(FILEINFO_MIME);
+
+        $fileType = $fileInfo->file($imagePath);
+
+        header("Content-Type: $fileType");
+
+        header("Content-Length: " . filesize($imagePath));
+
+        readfile($imagePath);
+
+        exit;
+    }
+
+    public static function destroyImage(string $pathToImage, string $imageToDestroy)
+    {
+        $regularImageToDestroy = WRITEPATH . "uploads/{$pathToImage}/{$imageToDestroy}"; 
+        $smallImageToDestroy   = WRITEPATH . "uploads/{$pathToImage}/small/{$imageToDestroy}";
+
+        if(is_file($regularImageToDestroy)) {
+
+            unlink($regularImageToDestroy);
+        
+        }
+
+        if(is_file($smallImageToDestroy)) {
+
+            unlink($smallImageToDestroy);
+        
+        }
+    }
+
     private static function worksWithImage(object $image, string $pathToStore) : string
     {
         // Nesse ponto armazenamos a imagem no caminho informado.

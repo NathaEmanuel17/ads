@@ -45,6 +45,9 @@
             line-height: 1.5;
             border-radius: .2rem;
         }
+        .img-custom {
+            max-width: 60% !important;
+        }
     </style>
     <?php echo $this->renderSection('styles'); ?>
 

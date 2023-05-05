@@ -116,9 +116,9 @@ class AdvertsUserController extends BaseController
     public function editUserAdvertImages(int $id = null)
     {
         $data = [
-            'advert'        => $this->advertService->getAdvertByID($id),
+            'advert'        => $advert = $this->advertService->getAdvertByID($id),
             'hiddens'       => ['_method' => 'PUT'],    // Para o upload de imagens (editando um anúncio)
-            'hiddensDelete' => ['_method' => 'DELETE'], // Para remover as imagens do anuncio
+            'hiddensDelete' => ['id' => $advert->id,'_method' => 'DELETE'], // Para remover as imagens do anuncio
         ];
 
         return view('Dashboard/Adverts/edit_images', $data);
@@ -131,6 +131,13 @@ class AdvertsUserController extends BaseController
         $this->advertService->tryStoreAdvertImages($this->request->getFiles('images'), $id);
         
         return redirect()->back()->with('success', lang('App.success_saved'));
+    }
+
+    public function deleteUserAdvertImage(string $image = null)
+    {
+        $this->advertService->tryDeleteAdvertImage($this->request->getGetPost('id'), $image);
+        
+        return redirect()->back()->with('success', lang('App.success_deleted'));
     }
     
 }

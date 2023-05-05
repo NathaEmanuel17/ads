@@ -156,7 +156,7 @@ class AdvertService
             $btnActions .= '</div>'; //fechamento da div do dropdown
 
             $data[] = [
-                'image'             => $advert->image(),
+                'image'             => $advert->image(classImage: 'card-img-top img-custom', sizeImage: $sizeImage),
                 'title'             => $advert->title,
                 'code'              => $advert->code,
                 'category'          => $advert->category,
@@ -166,7 +166,6 @@ class AdvertService
 
             ];
         }
-
         return $data;
     }
 
@@ -243,7 +242,22 @@ class AdvertService
 
             $this->fireAdvertEventForNewImages($advert);
         } catch (\Exception $e) {
-            //throw $th;
+           die('Error deleting data');
+        }
+
+    }
+
+    public function tryDeleteAdvertImage(int $advertID, string $image) 
+    {
+
+        try {
+            $advert = $this->getAdvertByID($advertID);
+        
+            $this->advertModel->tryDeleteAdvertImage($advert->id, $image);
+
+            ImageService::destroyImage('adverts', $image);
+        } catch (\Exception $e) {
+            die('Error deleting data');
         }
 
     }
