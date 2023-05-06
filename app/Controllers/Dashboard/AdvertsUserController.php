@@ -28,6 +28,11 @@ class AdvertsUserController extends BaseController
         return view('Dashboard/Adverts/index');
     }
 
+    public function archived()
+    {
+        return view('Dashboard/Adverts/archived');
+    }
+
     public function getUserAdverts()
     {
         if (!$this->request->isAJAX()) {
@@ -36,6 +41,19 @@ class AdvertsUserController extends BaseController
 
         $response = [
             'data' => $this->advertService->getAllAdverts(classBtnAction: 'btn btn-sm btn-outline-primary'),
+        ];
+
+        return $this->response->setJSON($response);
+    }
+
+    public function getUserArchivedAdverts()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        $response = [
+            'data' => $this->advertService->getArchivedAdverts(classBtnAction: 'btn btn-sm btn-outline-info'),
         ];
 
         return $this->response->setJSON($response);
@@ -138,6 +156,27 @@ class AdvertsUserController extends BaseController
         $this->advertService->tryDeleteAdvertImage($this->request->getGetPost('id'), $image);
         
         return redirect()->back()->with('success', lang('App.success_deleted'));
+    }
+
+    public function archiveUserAdvert()
+    {
+        $this->advertService->tryArchiveAdvert($this->request->getGetPost('id'));
+
+        return $this->response->setJSON($this->advertRequest->respondWithMessage(message: lang('App.success_archived')));
+    }
+
+    public function deleteUserAdvert()
+    {
+        $this->advertService->tryDeleteAdvert($this->request->getGetPost('id'));
+
+        return $this->response->setJSON($this->advertRequest->respondWithMessage(message: lang('App.success_deleted')));
+    }
+
+    public function recoverUserAdvert()
+    {
+        $this->advertService->tryRecoverAdvert($this->request->getGetPost('id'));
+
+        return $this->response->setJSON($this->advertRequest->respondWithMessage(message: lang('App.success_recovered')));
     }
     
 }

@@ -33,6 +33,7 @@ return [
 
 
 
+
     // Labels
     'label_address'         => 'Onde',
     'label_image'           => 'Imagem',

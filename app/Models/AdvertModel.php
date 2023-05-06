@@ -129,9 +129,8 @@ class AdvertModel extends MyBaseModel
         $builder->join('categories', 'categories.id = adverts.category_id');
         $builder->join('adverts_images', 'adverts_images.advert_id = adverts.id', 'LEFT'); //Nem todos os anuncios terão imagens
         $builder->groupBy('adverts.id'); // para não repetir registros
-        $builder->orderBy('adverts.id', 'DESC');
-        
-;       return $builder->findAll();
+        $builder->orderBy('adverts.id', 'DESC');;
+        return $builder->findAll();
     }
 
     /**
@@ -144,7 +143,7 @@ class AdvertModel extends MyBaseModel
     public function getAdvertByID(int $id, bool $withDeleted = false)
     {
         $builder = $this;
-       
+
         $tableFields = [
             'adverts.*',
             'users.email', // para notificarmos o usuário/anunciante
@@ -166,11 +165,10 @@ class AdvertModel extends MyBaseModel
         $advert = $builder->find($id);
 
         // Foi encontrado um anúncio?
-        if(!is_null($advert)) {
+        if (!is_null($advert)) {
 
             // Sim... então podemos retornar a imagem do mesmo
             $advert->images = $this->getAdvertImages($advert->id);
-
         }
 
         // Retornamos o anúncio que pode ou não ter imagens
@@ -185,13 +183,12 @@ class AdvertModel extends MyBaseModel
     public function trySaveAdvert(Advert $advert, bool $protect = true)
     {
         try {
-            
+
             $this->db->transStart();
 
             $this->protect($protect)->save($advert);
 
             $this->db->transComplete();
-
         } catch (\Exception $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
 
@@ -202,7 +199,7 @@ class AdvertModel extends MyBaseModel
     public function tryStoreAdvertImages(array $dataImages, int $advertID)
     {
         try {
-            
+
             $this->db->transStart();
 
             $this->db->table('adverts_images')->insertBatch($dataImages);
@@ -210,7 +207,6 @@ class AdvertModel extends MyBaseModel
             $this->protect(false)->set('is_published', false)->where('id', $advertID)->update();
 
             $this->db->transComplete();
-
         } catch (\Exception $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
 
@@ -226,5 +222,43 @@ class AdvertModel extends MyBaseModel
         ];
 
         return $this->db->table('adverts_images')->where($criteria)->delete();
+    }
+
+    public function tryArchiveAdvert(int $advertID)
+    {
+        try {
+
+            $this->db->transStart();
+
+            $this->where('user_id', $this->user->id)->delete($advertID);
+
+            $this->db->transComplete();
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+
+            die('Error saving data');
+        }
+    }
+
+    public function tryDeleteAdvert(int $advertID)
+    {
+        try {
+
+            $this->db->transStart();
+
+            // Quem está logado é o manager?
+            if (!$this->user->isSuperadmin()) {
+
+                // É o usuario anunciante... então recuperamos apenas os anúncios dele
+
+                $this->where('user_id', $this->user->id)->delete($advertID, true);
+            }
+            
+            $this->db->transComplete();
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+
+            die('Error deleting data');
+        }
     }
 }

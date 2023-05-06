@@ -52,20 +52,16 @@
 					<h3 class="widget-header"><?php echo lang('Adverts.title_index'); ?></h3>
 					<div class="row">
 						<div class="col-md-12">
-							<button type="button" id="createAdvertBtn" class="btn btn-main-sm add-button float-right mb-4"> + <?php echo lang('App.btn_new'); ?></button>
-						</div>
+
+                            <a href="<?php echo route_to('my.adverts'); ?>" class="btn btn-main-sm btn-outline-primary float-right mb-4"><?php echo lang('App.btn_back'); ?></a>
+						
+                        </div>
 						<div class=" col-md-12">
-							<a href="<?php echo route_to('my.archived.adverts'); ?>" class="btn btn-main-sm btn-outline-info mb-4"><?php echo lang('App.btn_all_archive'); ?></a>
 							<table class="table table-borderless table-striped" id="dataTable">
 								<thead>
 									<tr>
-										<th scope="col"><?php echo lang('Adverts.label_image'); ?></th>
 										<th scope="col" class="all"><?php echo lang('Adverts.label_title'); ?></th>
 										<th scope="col" class="none"><?php echo lang('Adverts.label_code'); ?></th>
-										<th scope="col" class="none text-center"><?php echo lang('Adverts.label_category'); ?></th>
-										<th scope="col" class="all"><?php echo lang('Adverts.label_status'); ?></th>
-										<th scope="col" class="none text-center"><?php echo lang('Adverts.label_address'); ?></th>
-
 										<th scope="col"><?php echo lang('App.btn_actions'); ?></th>
 									</tr>
 								</thead>
@@ -80,8 +76,6 @@
 	<!-- Container End -->
 </section>
 
-<?php echo $this->include('Dashboard/Adverts/_modal_advert') ?>
-
 <?= $this->endSection() ?>
 
 <!--Envio para o template principal os arquivos scrpits dessa view-->
@@ -89,15 +83,11 @@
 
 <script src="https://cdn.datatables.net/v/bs4/dt-1.13.4/r-2.4.1/datatables.min.js"></script>
 
-<script src="<?php echo site_url('manager_assets/mask/jquery.mask.min.js')?>"></script>
-<script src="<?php echo site_url('manager_assets/mask/app.js')?>"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<?php echo $this->include('Dashboard/Adverts/Scripts/_datatable_all') ?>
-<?php echo $this->include('Dashboard/Adverts/Scripts/_get_my_advert') ?>
-<?php echo $this->include('Dashboard/Adverts/Scripts/_show_modal_to_create') ?>
-<?php echo $this->include('Dashboard/Adverts/Scripts/_submit_modal_create_update') ?>
-<?php echo $this->include('Dashboard/Adverts/Scripts/_viacep') ?>
-<?php echo $this->include('Dashboard/Adverts/Scripts/_archive_advert') ?>
+<?php echo $this->include('Dashboard/Adverts/Scripts/_datatable_all_archived') ?>
+<?php echo $this->include('Dashboard/Adverts/Scripts/_recover_advert') ?>
+<?php echo $this->include('Dashboard/Adverts/Scripts/_delete_advert.php') ?>
 
 <script>
 	function refreshCSRFToken(token) {

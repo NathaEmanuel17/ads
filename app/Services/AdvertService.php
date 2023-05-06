@@ -169,6 +169,79 @@ class AdvertService
         return $data;
     }
 
+    public function getArchivedAdverts(
+        bool $showBtnRecover    = true,
+        string $classBtnAction  = '', 
+        string $classBtnRecover = '',
+        string $classBtnDelete  = '',
+    ): array {
+
+        $adverts = $this->advertModel->getAllAdverts(onlyDeleted: true);
+
+        $data = [];
+
+        $btnRecover = '' ;
+
+        foreach($adverts as $advert) {
+
+            // É para exibir o botão?
+            if($showBtnRecover) {
+                $btnRecover = form_button(
+                    [
+                        'data-id' => $advert->id,
+                        'id'      => 'btnRecoverAdvert', //ID do html element
+                        'class'   => 'dropdown-item'
+                    ],
+                    lang('App.btn_recover')
+                );
+            }
+
+            $btnDelete = form_button(
+                [
+                    'data-id' => $advert->id,
+                    'id'      => 'btnDeleteAdvert', //ID do html element
+                    'class'   => 'dropdown-item'
+                ],
+                lang('App.btn_delete')
+            );
+
+
+            // Comaçamos a montar o botão de ações do dropdown
+
+            $btnActions = '<div class="dropdown dropup">'; //abertura da div do dropdown
+
+            $attrAction = [
+                'type'            => 'button',
+                'id'              => 'actions',
+                'class'           => "dropdown-toggle {$classBtnAction}",
+                'data-bs-toggle'  => "dropdown", // Para BS5
+                'data-toggle'     => "dropdown", // Para BS4
+                'aria-haspopup'   => 'true',
+                'aria-expanded'   => 'false',
+            ];
+
+            $btnActions .= form_button($attrAction, lang('App.btn_actions'));
+
+            $btnActions .= '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">'; // abertura da div do dropdown menu
+
+            // Criamos as opções de botões(ações)
+            $btnActions .= $btnRecover;
+            $btnActions .= $btnDelete;
+
+
+            $btnActions .= '</div>'; //fechamento da div do dropdown-menu
+
+            $btnActions .= '</div>'; //fechamento da div do dropdown
+
+            $data[] = [
+                'title'             => $advert->title,
+                'code'              => $advert->code,
+                'actions'           => $btnActions,
+            ];
+        }
+        return $data;
+    }
+
     public function getAdvertByID(int $id, bool $withDeleted = false)
     {
         $advert = $this->advertModel->getAdvertByID($id, $withDeleted);
@@ -262,6 +335,52 @@ class AdvertService
 
     }
 
+    public function tryArchiveAdvert(int $advertID) 
+    {
+
+        try {
+
+            $advert = $this->getAdvertByID($advertID);
+            
+            $this->advertModel->tryArchiveAdvert($advert->id);
+        
+        } catch (\Exception $e) {
+            die('Error archiving data');
+        }
+
+    }
+
+    public function tryRecoverAdvert(int $advertID) 
+    {
+        try {
+
+            $advert = $this->getAdvertByID($advertID, withDeleted: true);
+
+            $advert->recover();
+
+            $this->trySaveAdvert($advert, protect: false);
+        
+        } catch (\Exception $e) {
+            die('Error recovering data');
+        }
+
+    }
+
+    public function tryDeleteAdvert(int $advertID)
+    {
+        try {
+
+            $advert = $this->getAdvertByID($advertID, withDeleted: true);
+            
+            $this->advertModel->tryDeleteAdvert($advert->id);
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+
+            die('Error deleting data');
+        }
+    }
+
+
     private function fireAdvertEvents(Advert $advert, bool $notifyUserIfPublished)
     {
         // Se estiver sendo editado, então o email já possui valor quando da recuperação do mesmo da base.
@@ -286,4 +405,3 @@ class AdvertService
         Events::trigger('nofity_manager', "Existem anúncios para serem auditados, novas imagens foram inseridas...");
     }
 }
-?>
