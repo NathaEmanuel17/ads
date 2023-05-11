@@ -187,7 +187,7 @@ class PlanService
 
         }
     }
-
+ 
     public function tryDeletePlan(int $id)
     {
         try {
@@ -202,6 +202,11 @@ class PlanService
             die($e->getMessage());
 
         }
+    }
+
+    public function getPlansToSell()
+    {
+        return $this->planModel->findAll();
     }
 
     private function createOrUpdatePlanOnGerencianet(Plan $plan)
@@ -221,6 +226,8 @@ class PlanService
             return $this->gerencianetService->updatePlan($plan);
         }
     }
+
+
 }
 
 ?>
