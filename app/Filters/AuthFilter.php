@@ -58,6 +58,12 @@ class AuthFilter extends AuthenticationFilter implements FilterInterface
             }
         }
 
+        // Usaremos para redirecionar o user para a pagina de compra após o user logar,
+        // e caso necessário, após o user verificar seu e-mail
+        if(url_is('choice*')) {
+            session()->set('choice', current_url());
+        }
+
         return $this->unauthenticated($request, $guards);
     }
 

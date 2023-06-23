@@ -209,6 +209,11 @@ class PlanService
         return $this->planModel->findAll();
     }
 
+    public function getChoosenPlan(int $planID)
+    {
+        return $this->getPlanByID($planID);
+    }
+
     private function createOrUpdatePlanOnGerencianet(Plan $plan)
     {   
         // Estamos criando um plano?

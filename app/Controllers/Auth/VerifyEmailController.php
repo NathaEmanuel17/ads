@@ -47,6 +47,13 @@ class VerifyEmailController extends BaseController
 
         Events::trigger('fireVerifiedUser', auth()->user());
 
+        // O usuário estava tentando comprar um plano?
+        if(session()->has('choice')) {
+            
+            // Sim... então redirecionamos ele para a mesma rota de compra
+            return redirect()->to(session('choice'));
+        }
+
         return redirect()->to(session('intended') ?? config('Auth')->home);
     }
 }

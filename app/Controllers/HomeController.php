@@ -34,6 +34,19 @@ class HomeController extends BaseController
         return view('Web/Home/pricing', $data);
     }
 
+    public function choice(int $planID = null)
+    {
+
+        $plan = $this->planService->getChoosenPlan($planID);
+       
+        $data = [
+            'title' => "Realizar o pagamento do Plano {$plan->name}",
+            'plan'  => $plan
+        ];
+
+        return view('Web/Home/choice', $data);
+    }
+
     public function dashboard()
     {
         return view('dashboard');

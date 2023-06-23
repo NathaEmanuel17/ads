@@ -41,6 +41,11 @@ class Filters extends BaseConfig
             AuthFilter::class,
             SuperadminFilter::class
         ],
+
+        'auth_verified' => [
+            AuthFilter::class,
+            \Fluent\Auth\Filters\EmailVerifiedFilter::class,
+        ]
     ];
 
     /**
@@ -59,6 +64,7 @@ class Filters extends BaseConfig
             // 'honeypot',
             // 'secureheaders',
         ],
+
     ];
 
     /**
