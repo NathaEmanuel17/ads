@@ -115,15 +115,15 @@
                                 <?php if (!auth()->user()) : ?>
 
                                     <li class="nav-item">
-                                        <a class="nav-link login-button" href="<?php echo route_to('login');?>">Login</a>
+                                        <a class="nav-link login-button" href="<?php echo route_to('login'); ?>">Login</a>
                                     </li>
 
                                     <li class="nav-item">
-                                        <a class="nav-link login-button" href="<?php echo route_to('register');?>">Registre-se</a>
+                                        <a class="nav-link login-button" href="<?php echo route_to('register'); ?>">Registre-se</a>
                                     </li>
 
                                 <?php endif; ?>
-                                
+
                                 <li class="nav-item">
                                     <a class="nav-link add-button" href="<?php echo route_to('dashboard') ?>"><i class="fa fa-plus-circle"></i> Criar anúncio</a>
                                 </li>
@@ -321,8 +321,19 @@
     <script src="<?php echo site_url('web/'); ?>js/scripts.js"></script>
 
     <script src="<?php echo site_url('manager_assets/toastr/toastr.min.js'); ?>"></script>
+    <script src="<?php echo site_url('web/loadingoverlay/loadingoverlay.min.js'); ?>"></script>
 
     <?php echo $this->renderSection('scripts'); ?>
+
+    <script>
+        $(document).ready(function() {
+            $('.btn-gn').on('click', function() {
+                $.LoadingOverlay("show", {
+                    background: "rgba(165, 190, 100, 0.5)"
+                });
+            });
+        });
+    </script>
 
 </body>
 

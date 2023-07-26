@@ -37,7 +37,8 @@ class User extends Entity implements
      * @var array
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'email_verified_at'          => 'datetime',
+        'display_phonedisplay_phone' => 'boolean',
     ];
 
     /**

@@ -203,7 +203,7 @@
 <?php //echo $this->include('Web/Home/Scripts/_submit_form_pay'); 
 ?>
 
-<?php //echo $this->include('Web/Home/Scripts/_viacep'); 
+<?php echo $this->include('Web/Home/Scripts/_viacep');
 ?>
 
 
@@ -264,14 +264,14 @@ Link para os scripts: https://dev.gerencianet.com.br/docs/pagamento-com-cartao#s
 <?php if (env('CI_ENVIRONMENT') === 'development') : ?>
 
 
-    <?php //echo $this->include('Web/Home/Scripts/_development');
+    <?php echo $this->include('Web/Home/Scripts/_development');
     ?>
 
 
 <?php else : ?>
 
 
-    <?php //echo $this->include('Web/Home/Scripts/_production');
+    <?php echo $this->include('Web/Home/Scripts/_production');
     ?>
 
 
