@@ -4,6 +4,7 @@ namespace App\Controllers\Dashboard;
 
 use App\Controllers\BaseController;
 use App\Requests\UserRequest;
+use App\Services\GerencianetService;
 use App\Services\UserService;
 use CodeIgniter\Config\Factories;
 
@@ -13,18 +14,31 @@ class DashboardController extends BaseController
     private $user;
     private $userRequest;
     private $userService;
+    private $gerencianetService;
     
     public function __construct()
     {
-        $this->user        = service('auth')->user();
-        $this->userRequest = Factories::class(UserRequest::class);
-        $this->userService = Factories::class(UserService::class);
+        $this->user               = service('auth')->user();
+        $this->userRequest        = Factories::class(UserRequest::class);
+        $this->userService        = Factories::class(UserService::class);
+        $this->gerencianetService = Factories::class(GerencianetService::class);
     }
 
     public function index()
     {
-
         return view('Dashboard/Home/index');
+    }
+    
+    public function myPlan()
+    {
+
+        $data = [
+            'subscription' => $this->gerencianetService->getUserSubscription(),
+            'hiddens'      => ['_method' => 'DELETE'], // Para o modal de cancelamento
+        ];
+        
+
+        return view('Dashboard/Home/my_plan', $data);
     }
 
     public function profile()
@@ -75,5 +89,26 @@ class DashboardController extends BaseController
         $this->userService->tryUpdateAccess($request->password);
 
         return redirect()->back()->with('success', lang('App.success_saved'));
+    }
+
+    public function cancelSubscription()
+    {       
+        $this->gerencianetService->cancelSubscription();
+
+        return redirect()->route('dashboard')->with('success', 'Sua assinatura foi cancelado com sucesso');
+
+    }
+
+    public function detailCharge(int $chargeID = null)
+    {
+        if(is_null($chargeID)) {
+
+            return redirect()->back()->with('danger', 'Não identificamos a cobrança');
+        }   
+
+        $charge = $this->gerencianetService->detailCharge($chargeID);
+        
+        return redirect()->back()->with('charge', $charge);
+
     }
 }

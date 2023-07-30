@@ -5,6 +5,9 @@ namespace App\Services;
 use Gerencianet\Exception\GerencianetException;
 use Gerencianet\Gerencianet;
 use App\Entities\Plan;
+use App\Entities\Subscription;
+use CodeIgniter\Config\Factories;
+use stdClass;
 
 class GerencianetService
 {
@@ -34,7 +37,8 @@ class GerencianetService
             'time'             => env('GERENCIANET_TIMEOUT')
         ];
 
-        $this->user = service('auth')->user();
+        $this->user                = service('auth')->user();
+        $this->subscriptionService = Factories::class(SubscriptionService::class);
     }
 
     public function createPlan(Plan $plan)
@@ -174,16 +178,17 @@ class GerencianetService
                 }
             }
             */
-            
+
             $api = new Gerencianet($this->options);
             $response = $api->createSubscription($params, $body);
 
             $choosenPlan->subscription_id = (int) $response['data']['subscription_id'];
 
-            /**
-             * @todo avaliar quando for boleto para obtermos o QRCODE da gerencianet
-             */
+            if ($request->payment_method === self::PAYMENT_METHOD_BILLET) {
 
+                $qrcodeImage =  $this->paySubscription($choosenPlan, $request);
+                return $qrcodeImage;
+            }
             // $this->paySubscription($choosenPlan, $request);
             $this->paySubscription($choosenPlan, $request);
 
@@ -198,9 +203,164 @@ class GerencianetService
         }
     }
 
+    public function detailSubscription(int $subscriptionID): array
+    {
+
+        $params = ['id' => $subscriptionID];
+
+        try {
+            $api = new Gerencianet($this->options);
+            $response = $api->detailSubscription($params, []);
+
+            return $response['data'];
+        } catch (GerencianetException $e) {
+
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            die('Erro ao detalhar assinatura na gerencianet');
+        } catch (\Exception $e) {
+
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+            die('Erro ao detalhar assinatura na gerencianet');
+        }
+    }
+
+    public function getUserSubscription()
+    {
+        if (is_null($this->userSubscription)) {
+
+            $this->userSubscription = $this->subscriptionService->getUserSubscription();
+        }
+
+        // Ainda continua null? ou seja, user possui assinatura?
+        if (is_null($this->userSubscription)) {
+
+            return null;
+        }
+
+        // Nesse ponto o user logado possui assinatura.
+        // Devemos agora consultar o seu status de pagamento na gerencianet
+
+        // Devemos consultar a gerencianet?
+        if ($this->userHasSubscription()) {
+            //Sim... a assinatura não é mais valida aqui do nosso lado
+
+            $details = $this->detailSubscription($this->userSubscription->subscription_id);
+
+            // User tem assinatura, mas precisamos verificar se foi cancelada,
+            // Isso pode ter ocorrido quando o user cancelou
+            // através do e-mail que a gerencia net envia
+            // ou sejá, não foi pelo nosso dashboard
+            // É importante destacar que o canecelamento pelo e-mail
+            // só funciona quando estamos no ambiente produtivo
+            if (($details['status'] == self::STATUS_CANCELED)) {
+                $this->subscriptionService->tryDestroyUserSubscription($this->userSubscription->subscription_id);
+
+                //user não possui mais assinatura aqui no nosso lado
+                return null;
+            }
+
+            $this->defineSubscriptionSituation($details);
+        }
+
+        return $this->userSubscription;
+    }
+
+    public function userHasSubscription(): bool
+    {
+        return $this->subscriptionService->userHasSubscription();
+    }
+
+    public function reasonCharge(string $status): string
+    {
+        $message  = match ($status) {
+
+            self::STATUS_NEW        => 'Cobrança gerada, aguardando definição da forma de pagamento.',
+            self::STATUS_WAITING    => 'Forma de pagamento selecionada, aguardando a confirmação do pagamento.',
+            self::STATUS_PAID       => 'Pagamento confirmado.',
+            self::STATUS_UNPAID     => 'Não foi possível confirmar o pagamento da cobrança.',
+            self::STATUS_REFUNDED   => 'Pagamento devolvido pelo lojista ou pelo intermediador Efí.',
+            self::STATUS_CONTESTED  => 'Pagamento em processo de contestação.',
+            self::STATUS_SETTLED    => 'Cobrança foi confirmada manualmente.',
+            self::STATUS_CANCELED   => 'Cobrança cancelada pelo vendedor ou pelo pagador.',
+
+            default                 => 'Status de pagamento desconhecido',
+        };
+
+        return $message;
+    }
+
+    public function cancelSubscription()
+    {
+
+        $this->getUserSubscription();
+
+        $params = ['id' => $this->userSubscription->subscription_id];
+
+        try {
+            $api = new Gerencianet($this->options);
+            $response = $api->cancelSubscription($params, []);
+
+            $this->subscriptionService->tryDestroyUserSubscription($this->userSubscription->subscription_id);
+
+            // echo '<pre>' . json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</pre>';
+        } catch (GerencianetException $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e->errorDescription]);
+
+            die('Erro ao cancelar assinatura na gerencianet');
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e->errorDescription]);
+
+            die('Erro ao cancelar assinatura na gerencianet');
+        }
+    }
+
+    public function detailCharge(int $chargeID)
+    {
+        $params = ['id' => $chargeID];
+
+        try {
+            $api = new Gerencianet($this->options);
+            $response = $api->detailCharge($params, []);
+
+            return $this->preparesChargeForView($response['data']);
+
+        } catch (GerencianetException $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+
+            die('Erro ao detalhar cobrança na gerencianet');
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+
+            die('Erro ao detalhar cobrança na gerencianet');
+        }
+    }
+
+    private function preparesChargeForView(array $chargeData): object
+    {
+        $chargeData = esc($chargeData);
+
+        $charge = new stdClass;
+
+        $charge->charge_id          = $chargeData['charge_id'];
+        $charge->payment_method     = $chargeData['payment']['method'];
+        $charge->status             = $chargeData['status'];
+
+        // é boleto
+        if(isset($chargeData['payment']['banking_billet'])) {
+
+            $charge->url_pdf   = $chargeData['payment']['banking_billet']['pdf']['charge'];
+            $charge->expire_at = date('d-m-Y', strtotime($chargeData['payment']['banking_billet']['expire_at']));
+        }
+
+        $charge->created_at    =  date('d-m-Y', strtotime($chargeData['created_at']));
+        $charge->history    =  $chargeData['history'];
+
+        return $charge;
+    }
+
     private function paySubscription(Plan $choosenPlan, object $request)
     {
-    
+
         $params = ['id' => $choosenPlan->subscription_id];
 
         $customer = [
@@ -245,8 +405,6 @@ class GerencianetService
             ];
         }
 
-
-
         try {
             /*
             {
@@ -286,16 +444,84 @@ class GerencianetService
 
             $response = $api->paySubscription($params, $body);
 
-            echo '<pre>' . json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</pre>';
-            exit;
+            $this->subscriptionService->tryInsertSubscription($choosenPlan, $response['data']);
+            $this->removeSessionData();
+
+            if ($request->payment_method === self::PAYMENT_METHOD_BILLET) {
+                return $response['data']['pix']['qrcode_image'];
+            }
         } catch (GerencianetException $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
-            
+
             die('Erro ao pagar assinatura na gerencianet');
         } catch (\Exception $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
 
             die('Erro ao pagar assinatura na gerencianet');
         }
+    }
+
+    private function defineSubscriptionSituation(array $details): bool
+    {
+        if (empty($details)) {
+
+            return false;
+        }
+
+        $this->userSubscription->status  = $details['status'];
+        $this->userSubscription->history = $details;
+
+        return $this->handleBillingHistory($details['history']);
+    }
+
+    private function handleBillingHistory(array $history): bool
+    {
+        $this->userSubscription->is_paid = false;
+
+        $isPaid = false;
+
+        foreach ($history as $charge) {
+
+            $isPaid = true;
+
+            $this->userSubscription->reason_charge = $this->reasonCharge($charge['status']);
+
+            if ($charge['status'] == self::STATUS_PAID || $charge['status'] == self::STATUS_SETTLED) {
+                $this->userSubscription->is_paid = true;
+
+                $this->userSubscription->charge_not_paid = null;
+
+                $this->userSubscription->valid_until = date('Y-m-d H:i:s', time() + 3600); // 60 minutos
+            } else {
+
+                $isPaid = false;
+
+                $this->userSubscription->is_paid = false;
+
+                $this->userSubscription->charge_not_paid = $charge['charge_id'];
+
+                $this->userSubscription->valid_until = null;
+
+                break;
+            }
+        }
+
+        //Nesse ponto, já definimos a situação do objeto $this->getUserSubscription. ou seá, diversas propriedades foram definidas.
+        //Portanto, chegou o momento de atualizar a assinatura na nossa base de dados.
+        $this->subscriptionService->trySaveSubscription($this->userSubscription);
+
+        // Retornamos se está pago ou não (true ou false)
+        return $isPaid;
+    }
+
+    private static function removeSessionData(): void
+    {
+
+        $data = [
+            'intended',
+            'choice',
+        ];
+
+        session()->remove($data);
     }
 }

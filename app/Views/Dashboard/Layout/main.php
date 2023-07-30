@@ -278,7 +278,19 @@
 
     <script src="<?php echo site_url('manager_assets/toastr/toastr.min.js'); ?>"></script>
 
+    <script src="<?php echo site_url('web/loadingoverlay/loadingoverlay.min.js'); ?>"></script>
+
     <?php echo $this->renderSection('scripts'); ?>
+
+    <script>
+        $(document).ready(function() {
+            $('.btn-gn').on('click', function() {
+                $.LoadingOverlay("show", {
+                    background: "rgba(165, 190, 100, 0.5)"
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

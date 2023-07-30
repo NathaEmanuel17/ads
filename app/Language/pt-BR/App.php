@@ -36,7 +36,8 @@ return [
 
         'dashboard' => [
             'dashboard'         => 'Principal',
-            'my_adverts'        => 'Meus anúncios'
+            'my_adverts'        => 'Meus anúncios',
+            'my_plan'           => 'Meu plano'
         ],
 
     ],

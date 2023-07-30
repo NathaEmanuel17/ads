@@ -45,11 +45,11 @@ class HomeController extends BaseController
 
     public function choice(int $planID = null)
     {
+        
+        if ($this->gerencianetService->userHasSubscription()) {
 
-        /** 
-         * @todo verifica se o user logado já tem assinatura
-         */
-
+            return redirect()->route('dashboard')->with('info', 'Você já passui uma assinatura. Aproveite para cancelá-la e adquirir o novo Plano');
+        }  
 
         if (!$this->userService->userDataIsComplete()) {
 
@@ -58,7 +58,6 @@ class HomeController extends BaseController
 
             return redirect()->route('profile')->with('info', service('auth')->user()->fashMessageToUser());
         }
-
 
         $plan = $this->planService->getChoosenPlan($planID);
 
@@ -72,34 +71,28 @@ class HomeController extends BaseController
 
     public function attemptPay(int $planID = null)
     {
-        /*
-            [payment_method] => credit
-            [card_number] => 4881755992972070
-            [card_expiration_date] => 2024-10-11
-            [card_cvv] => 322
-            [card_brand] => visa
-            [zipcode] => 80530-000
-            [street] => Avenida Cândido de Abreu
-            [city] => Curitiba
-            [neighborhood] => Centro Cívico
-            [number] => 
-            [state] => PR
-            [expire_at] => 
-            [payment_token] => 7c62edf2af38fc57a42f3569966453db172c97cf
-        */
-
         $this->gerencianetRequest->validateBeforeSave($this->request->getPost('payment_method'));
 
         $plan = $this->planService->getChoosenPlan($planID);
+
         $request = (object) $this->removeSpoofingFromRequest();
-        /**
-         * @todo criar regra para capturar quando for boleto, pois queremos devolver para o anunciante o QRCODE
-         */
+        
+        if($request->payment_method == $this->gerencianetService::PAYMENT_METHOD_BILLET) {
+
+            $qrcodeImage = $this->gerencianetService->createSubscription($plan, $request);
+
+            $qrcodeImageBuilded = img(['src'=> $qrcodeImage, 'width' => '150px']);
+
+            session()->setFlashdata('success', "Muito obrigado! Aproveite para realizar o pagamento do seu boleto Bancário com PIX <br/><br/>{$qrcodeImageBuilded}");
+            
+            return $this->response->setJSON($this->gerencianetRequest->respondWithMessage('Estamos aguardando a confirmação do pagamento'));
+        }
 
         $this->gerencianetService->createSubscription($plan, $request);
         
-        echo '<pre>';
-        print_r($this->removeSpoofingFromRequest());
-        exit;
+        session()->setFlashdata('success', 'Muito obrigado! Estamos aguardando a confirmação do pagamento.');
+
+        return $this->response->setJSON($this->gerencianetRequest->respondWithMessage('Estamos aguardando a confirmação do pagamento'));
     }
+
 }

@@ -17,8 +17,11 @@
                 <li class="<?php echo url_is("{$locale}/dashboard") ? 'active' : '';?>">
                     <a href="<?php echo route_to('dashboard'); ?>"><i class="fa fa-home"></i><?php echo lang('App.sidebar.dashboard.dashboard'); ?></a>
                 </li>
+                <li class="<?php echo url_is("{$locale}/dashboard/my-plan") ? 'active' : '';?>">
+                    <a class="btn-gn" href="<?php echo route_to('my.plan'); ?>"><i class="fa fa-bookmark-o"></i><?php echo lang('App.sidebar.dashboard.my_plan'); ?></a>
+                </li>
                 <li class="<?php echo url_is("{$locale}/dashboard/adverts/my") ? 'active' : '';?>">
-                    <a href="<?php echo route_to('my.adverts'); ?>"><i class="fa fa-user"></i><?php echo lang('App.sidebar.dashboard.my_adverts'); ?></a>
+                    <a class="btn-gn" href="<?php echo route_to('my.adverts'); ?>"><i class="fa fa-user"></i><?php echo lang('App.sidebar.dashboard.my_adverts'); ?></a>
                 </li>
                 <li><a href=""><i class="fa fa-bookmark-o"></i> Favourite Ads <span>5</span></a></li>
                 <li><a href=""><i class="fa fa-file-archive-o"></i>Archived Ads <span>12</span></a></li>
