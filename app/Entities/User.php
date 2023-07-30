@@ -52,4 +52,20 @@ class User extends Entity implements
 
         return $this;
     }
+
+    public function fashMessageToUser()
+    {
+        if(session()->has('choice')) {
+
+            return 'Antes de prosseguir com para o pagamento da sua Assinatura, por favor complete o seu perfil. Você fara isso apenas uma vez';
+        }
+
+        return 'Por favor complete o seu perfil. Você fara isso apenas uma vez';
+
+    }
+
+    public function fullname()
+    {
+        return "{$this->name} {$this->last_name}";
+    }
 }

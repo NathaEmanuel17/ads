@@ -7,6 +7,7 @@ use CodeIgniter\Validation\StrictRules\CreditCardRules;
 use CodeIgniter\Validation\StrictRules\FileRules;
 use CodeIgniter\Validation\StrictRules\FormatRules;
 use CodeIgniter\Validation\StrictRules\Rules;
+use App\Validations\Customized; //Nossas validações
 
 class Validation extends BaseConfig
 {
@@ -25,6 +26,7 @@ class Validation extends BaseConfig
         FormatRules::class,
         FileRules::class,
         CreditCardRules::class,
+        Customized::class //Nossas validações
     ];
 
     /**
@@ -117,4 +119,61 @@ class Validation extends BaseConfig
     ];
 
     public $advert_images_errors = [];
+
+    // --------------------------------------------------------------------
+    // User
+    // --------------------------------------------------------------------
+
+    public $user_profile = [
+        'name'         => 'required|min_length[2]|max_length[25]',
+        'last_name'    => 'required|min_length[2]|max_length[45]',
+        'email'        => 'required|valid_email|min_length[2]|max_length[240]|is_unique[users.email,id,{id}]',
+        'cpf'          => 'required|validate_cpf|is_unique[users.cpf,id,{id}]', // CRIAR CLASSE DE VALIDAÇÃO CUSTOMIZADA
+        'phone'        => 'required|validate_phone|exact_length[15]|is_unique[users.phone,id,{id}]', // criar metodo para validar telefone
+        'birth'        => 'required', // criar metodo para validar telefone
+    ];
+
+    public $user_profile_errors = [];
+
+    public $access_update = [
+        'password'              => 'required|min_length[8]',
+        'password_confirmation' => 'matches[password]',
+    ];
+
+    public $access_update_errors = [];
+
+    // --------------------------------------------------------------------
+    // Gerencianet
+    // --------------------------------------------------------------------
+
+    public $gerencianet_billet = [
+        'payment_method'     => 'required|in_list[credit,billet]',
+        'expire_at'          => 'required|valid_date[Y-m-d]',
+    ];
+
+    public $gerencianet_credit = [
+        'payment_method'       => 'required|in_list[credit,billet]',
+        'card_number'          => 'required',
+        'card_expiration_date' => 'required',
+        'card_cvv'             => 'required',
+        'card_brand'           => 'required|in_list[visa,elo,mastercard,amex,hipercard,diners]',
+        'payment_token'        => 'required|string',
+        'zipcode'              => 'required',
+        'street'               => 'required',
+        'city'                 => 'required',
+        'neighborhood'         => 'required',
+        'state'                => 'required',
+    ];   
+
+    public $gerencianet_billet_errors = [
+        'payment_method' => [
+            'in_list'  => 'Por favor escolha crédito ou Boleto Bancário',
+        ],
+    ];
+    public $gerencianet_credit_errors = [
+        'payment_method' => [
+            'in_list'  => 'Por favor escolha crédito ou Boleto Bancário',
+        ],
+    ];
+
 }

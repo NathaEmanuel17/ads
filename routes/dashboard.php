@@ -3,6 +3,11 @@
 $routes->group('{locale}/dashboard', ['namespace' => 'App\Controllers\Dashboard', 'filter' => 'auth::web'], function ($routes) {
 
     $routes->get('/', 'DashboardController::index', ['filter' => 'verified', 'as' => 'dashboard']);
+    $routes->get('profile', 'DashboardController::profile', ['filter' => 'confirm', 'as' => 'profile']);
+    $routes->put('profile-update', 'DashboardController::updateProfile', ['as' => 'profile.update']);
+    $routes->get('access', 'DashboardController::access', ['as' => 'access']);
+    $routes->put('access-update', 'DashboardController::updateAccess', ['as' => 'access.update']);
+
 
     // User ads
     /**

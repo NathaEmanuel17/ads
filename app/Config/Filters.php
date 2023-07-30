@@ -30,7 +30,8 @@ class Filters extends BaseConfig
         'auth.basic' => \Fluent\Auth\Filters\AuthenticationBasicFilter::class,
         'can'        => \Fluent\Auth\Filters\AuthorizeFilter::class,
         'confirm'    => [
-            \Fluent\Auth\Filters\AuthenticationFilter::class,
+            // \Fluent\Auth\Filters\AuthenticationFilter::class, // lança exception  
+            AuthFilter::class,  
             \Fluent\Auth\Filters\ConfirmPasswordFilter::class,
         ],
         'guest'    => \Fluent\Auth\Filters\RedirectAuthenticatedFilter::class,

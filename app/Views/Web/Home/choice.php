@@ -106,6 +106,7 @@
                                 <option value="mastercard">Master Card</option>
                                 <option value="amex">Américan Express</option>
                                 <option value="hipercard">Hiper Card</option>
+                                <option value="diners">Diners Club</option>
 
                             </select>
                             <span class="text-danger error-text card_brand"></span>
@@ -200,7 +201,7 @@
 
 <!-- Loading overlay colocamos no template principal --->
 
-<?php //echo $this->include('Web/Home/Scripts/_submit_form_pay'); 
+<?php echo $this->include('Web/Home/Scripts/_submit_form_pay');
 ?>
 
 <?php echo $this->include('Web/Home/Scripts/_viacep');
@@ -291,33 +292,38 @@ Link para os scripts: https://dev.gerencianet.com.br/docs/pagamento-com-cartao#s
 
             if (card_brand) {
 
-                var card_number = $('[name=card_number]').val();
-                var card_cvv = $('[name=card_cvv]').val();
-
-                var card_expiration_date = $('[name=card_expiration_date]').val();
-
-                card_expiration_date = card_expiration_date.split('-');
-
-                var expiration_year = card_expiration_date[0];
-                var expiration_month = card_expiration_date[1];
-
-                checkout.getPaymentToken({
-                    brand: card_brand, // bandeira do cartão
-                    number: card_number, // número do cartão
-                    cvv: card_cvv, // código de segurança
-                    expiration_month: expiration_month, // mês de vencimento
-                    expiration_year: expiration_year // ano de vencimento
-                }, callback);
-
-                // Invocamos o LoadingOverlay até termos o token do pagamento
-                $.LoadingOverlay("show", {
-                    image: "",
-                    text: 'Estamos validando seu cartão....',
-                });
+                validateCard(card_brand)
 
             }
 
         });
+
+        function validateCard(card_brand) {
+
+            // Invocamos o LoadingOverlay até termos o token do pagamento
+            $.LoadingOverlay("show", {
+                image: "",
+                text: 'Estamos validando seu cartão....',
+            });
+
+            var card_number = $('[name=card_number]').val();
+            var card_cvv = $('[name=card_cvv]').val();
+
+            var card_expiration_date = $('[name=card_expiration_date]').val();
+
+            card_expiration_date = card_expiration_date.split('-');
+
+            var expiration_year = card_expiration_date[0];
+            var expiration_month = card_expiration_date[1];
+
+            checkout.getPaymentToken({
+                brand: card_brand, // bandeira do cartão
+                number: card_number, // número do cartão
+                cvv: card_cvv, // código de segurança
+                expiration_month: expiration_month, // mês de vencimento
+                expiration_year: expiration_year // ano de vencimento
+            }, callback);
+        }
 
 
         /**
@@ -333,6 +339,8 @@ Link para os scripts: https://dev.gerencianet.com.br/docs/pagamento-com-cartao#s
 
                 $('#error_gn').html('<div class="alert alert-warning">' + error.error_description + '</alert>');
 
+                // Escondemos o LoadingOverlay
+                $.LoadingOverlay("hide", true);
             } else {
                 // Trata a resposta
                 console.log(response);

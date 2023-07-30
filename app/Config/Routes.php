@@ -55,6 +55,7 @@ $routes->get('image/(:any)/(:any)', 'DetailsController::image/$1/$2', ['as' => '
 $routes->get('pricing', 'HomeController::pricing', ['as' => 'pricing']);
 
 $routes->get('choice/(:num)', 'HomeController::choice/$1', ['as' => 'choice', 'filter' => 'auth_verified']);
+$routes->post('pay/(:num)', 'HomeController::attemptPay/$1', ['as' => 'pay']);
 
 /*
  * --------------------------------------------------------------------

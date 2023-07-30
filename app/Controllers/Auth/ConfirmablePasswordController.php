@@ -31,7 +31,7 @@ class ConfirmablePasswordController extends BaseController
         $request = (object) $this->request->getPost();
 
         if (
-            ! Auth::validate([
+            !Auth::validate([
                 'email'    => auth()->user()->email,
                 'password' => $request->password,
             ])
@@ -40,6 +40,11 @@ class ConfirmablePasswordController extends BaseController
         }
 
         session()->set('password_confirmed_at', time());
+
+        if (str_contains(session('intended'), 'profile') && session()->has('choice')) {
+
+            return redirect()->route('profile')->with('info', service('auth')->user()->fashMessageToUser());
+        }
 
         return redirect()->to(session('intended') ?? config('Auth')->home);
     }
