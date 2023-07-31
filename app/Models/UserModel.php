@@ -65,14 +65,34 @@ class UserModel extends Model implements UserProviderInterface
     public function fake(Generator &$faker)
     {
         return [
-            'email'    => $faker->email,
-            'username' => $faker->userName,
-            'password' => 'secret',
+            'email'             => $faker->unique()->email,
+            'username'          => $faker->unique()->userName,
+            'password'          => '12345678',
+            'name'              => $faker->name(),
+            'last_name'         => $faker->lastName(),
+            'email_verified_at' => date('Y-m-d H:i:s') // está verificado
         ];
     }
 
     public function getSuperadmin()
     {
         return $this->join('superadmins', 'superadmins.user_id = users.id')->first();
+    }
+
+    public function deleteUserAccout()
+    {
+        
+        try {
+    
+            $this->db->transStart();
+
+            $this->delete(service('auth')->user()->id, purge: true);
+
+            $this->db->transComplete();
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+
+            die('Erro ao excluir a conta');
+        }
     }
 }

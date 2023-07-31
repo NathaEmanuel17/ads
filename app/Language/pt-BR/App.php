@@ -37,7 +37,10 @@ return [
         'dashboard' => [
             'dashboard'         => 'Principal',
             'my_adverts'        => 'Meus anúncios',
-            'my_plan'           => 'Meu plano'
+            'my_plan'           => 'Meu plano',
+            'user_sice'         => 'Está conosco desde',
+            'profile'           => 'Meus dados',
+            'delete_account'    => 'Excluir minha conta'
         ],
 
     ],

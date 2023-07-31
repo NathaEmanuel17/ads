@@ -111,4 +111,20 @@ class DashboardController extends BaseController
         return redirect()->back()->with('charge', $charge);
 
     }
+
+    public function confirmDeleteAccount()
+    {
+        $data = [
+            'hiddens'      => ['_method' => 'DELETE'] 
+        ];
+        
+        return view('Dashboard/Home/confirm_delete_account', $data);
+    }
+
+    public function accountDelete()
+    {
+        $this->userService->deleteUserAccout();
+
+        return redirect()->route('web.home');
+    }
 }

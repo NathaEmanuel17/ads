@@ -78,4 +78,28 @@ class UserService
             die('Não foi possivel atualizar o seu acesso');
         }
     }
+
+    public function deleteUserAccout()
+    {
+
+        try {
+            
+            $gerencianetService = Factories::class(GerencianetService::class);
+
+            // User tem assinatura?
+            if($gerencianetService->userHasSubscription())
+            {
+                // Sim... então removemos na gerencianet tambem
+                $gerencianetService->cancelSubscription();
+            }
+
+            // Removemos da nossa base
+            $this->userModel->deleteUserAccout();
+
+            // destruimos a sessão
+            service('auth')->logout();
+        } catch (\Exception $e) {
+            die('Não foi possivel atualizar o seu acesso');
+        }
+    }
 }

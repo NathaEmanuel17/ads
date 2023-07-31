@@ -5,6 +5,8 @@ $routes->group('{locale}/dashboard', ['namespace' => 'App\Controllers\Dashboard'
     $routes->get('/', 'DashboardController::index', ['filter' => 'verified', 'as' => 'dashboard']);
     $routes->get('my-plan', 'DashboardController::myPlan', ['as' => 'my.plan']);
     $routes->get('detail-charge/(:num)', 'DashboardController::detailCharge/$1', ['as' => 'detail.charge']);
+    $routes->get('confirm-deletion-account', 'DashboardController::confirmDeleteAccount', ['as' => 'confirm.deletion.account', 'filter' => 'confirm']);
+    $routes->delete('deletion-account', 'DashboardController::accountDelete', ['as' => 'account.delete', 'filter' => 'confirm']);
     $routes->delete('cancel-subscription', 'DashboardController::cancelSubscription', ['as' => 'my.subscription.cancel']);
     $routes->get('profile', 'DashboardController::profile', ['filter' => 'confirm', 'as' => 'profile']);
     $routes->put('profile-update', 'DashboardController::updateProfile', ['as' => 'profile.update']);
