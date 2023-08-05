@@ -253,12 +253,85 @@ class AdvertModel extends MyBaseModel
 
                 $this->where('user_id', $this->user->id)->delete($advertID, true);
             }
-            
+
             $this->db->transComplete();
         } catch (\Exception $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
 
             die('Error deleting data');
         }
+    }
+
+    public function getAllAdvertsPaginated(int $perPage = 10, $criteria = [])
+    {
+        $this->setSQLMode();
+
+        $builder =  $this;
+
+        $tableFields = [
+            'adverts.*',
+            'categories.name as category',
+            'categories.slug as category_slug',
+            'adverts_images.image As images', // para utilizarmos no método image  do entity advert
+        ];
+
+        $builder->select($tableFields);
+        $builder->join('categories', 'categories.id = adverts.category_id');
+        $builder->join('adverts_images', 'adverts_images.advert_id = adverts.id');
+
+        if (!empty($criteria)) {
+
+            $builder->where($criteria);
+        }
+
+        $builder->where('adverts.is_published', true);
+        $builder->orderBy('adverts.id', 'DESC');
+        $builder->groupBy('adverts.id');
+
+        $adverts =  $builder->paginate($perPage);
+
+        return $adverts;
+    }
+
+    public function getAdvertByCode(string $code, bool $ofTheLoggedInUser = false)
+    {
+        $tableFields = [
+            'adverts.*',
+            'users.name',
+            'users.email', // usaremos para a parte de perguntas
+            'users.username',
+            'users.phone',
+            'users.display_phone',
+            'users.created_at As user_since',
+            'categories.name as category',
+            'categories.slug as category_slug', // usaremos para filtrar os anuncios por categoria
+        ];
+
+        $builder = $this;
+        $builder->select($tableFields);
+        $builder->join('users', 'users.id = adverts.user_id');
+        $builder->join('categories', 'categories.id = adverts.category_id');
+        $builder->where('adverts.is_published', true);
+        $builder->where('adverts.code', $code);
+
+        if ($ofTheLoggedInUser) {
+
+            $builder->where('adverts.user_id', $this->user->id);
+        }
+
+        $advert = $builder->first();
+
+        if(!is_null($advert)){
+
+            $advert->images = $this->getAdvertImages($advert->id);
+            // recupero as imagens do esmo
+        }
+
+        if(!is_null($advert)){
+
+            // recupero as perguntas e respostas do mesmo
+        }
+
+        return $advert;
     }
 }

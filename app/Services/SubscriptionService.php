@@ -76,7 +76,7 @@ class SubscriptionService
      */
     public function userHasSubscription(): bool
     {
-        return $this->getUserSubscription() !== null; // se for diferente de nuçç, o user já possio assinatura
+        return $this->getUserSubscription() !== null; // se for diferente de null, o user já possio assinatura
     }
 
     /**

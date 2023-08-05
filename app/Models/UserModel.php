@@ -64,13 +64,21 @@ class UserModel extends Model implements UserProviderInterface
      */
     public function fake(Generator &$faker)
     {
+        $faker->addProvider(new \Faker\Provider\pt_BR\Person($faker));
+        $faker->addProvider(new \Faker\Provider\pt_BR\PhoneNumber($faker));
+
         return [
             'email'             => $faker->unique()->email,
             'username'          => $faker->unique()->userName,
             'password'          => '12345678',
             'name'              => $faker->name(),
             'last_name'         => $faker->lastName(),
-            'email_verified_at' => date('Y-m-d H:i:s') // está verificado
+            'email_verified_at' => date('Y-m-d H:i:s'), // está verificado
+            'cpf'               => $faker->unique()->cpf,
+            'phone'             => $faker->unique()->cellphoneNumber,
+            'birth'             => $faker->date('Y-m-d H:i:s'),
+            'display_phone'     => $faker->numberBetween(0, 1),
+
         ];
     }
 

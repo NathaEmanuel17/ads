@@ -40,10 +40,10 @@ class AdvertService
 
         $baseRouteToQuestions  = $this->user->isSuperadmin() ? 'adverts.manager.edit.questions' : 'adverts.my.edit.questions';
 
-        foreach($adverts as $advert) {
+        foreach ($adverts as $advert) {
 
             // É para exibir o botão?
-            if($showBtnArchive) {
+            if ($showBtnArchive) {
                 // Sim
                 $btnArchive = form_button(
                     [
@@ -73,9 +73,9 @@ class AdvertService
                 ],
                 lang('Adverts.btn_edit_images')
             );
-            
+
             // O botão é para ser exibido e o anúncio está publicado?
-            if($showBtnViewAdvert && $advert->is_published) {
+            if ($showBtnViewAdvert && $advert->is_published) {
 
                 // Sim...podemos montar o botão ação
 
@@ -88,11 +88,10 @@ class AdvertService
                     ],
                     lang('Adverts.btn_view_advert')
                 );
-
             }
-            
+
             // O botão é para ser exibido e o anúncio está publicado?
-            if($showBtnQuestion && $advert->is_published) {
+            if ($showBtnQuestion && $advert->is_published) {
 
                 // Sim...podemos montar o botão ação
 
@@ -105,7 +104,6 @@ class AdvertService
                     ],
                     lang('Adverts.btn_view_questions')
                 );
-
             }
 
             // Comaçamos a montar o botão de ações do dropdown
@@ -131,22 +129,21 @@ class AdvertService
             $btnActions .= $btnEditImages;
 
             // O botão é para ser exibido e o anúncio está publicado?
-            if($showBtnViewAdvert && $advert->is_published) {
+            if ($showBtnViewAdvert && $advert->is_published) {
 
                 // Sim...podemos montar o botão ação
                 $btnActions .= $btnViewAdvert;
             }
 
             // O botão é para ser exibido e o anúncio está publicado?
-            if($showBtnQuestion && $advert->is_published) {
+            if ($showBtnQuestion && $advert->is_published) {
 
                 // Sim...podemos montar o botão ação
                 $btnActions .= $btnViewQuestions;
-                
             }
 
             // É para exibir o botão?
-            if($showBtnArchive) {
+            if ($showBtnArchive) {
                 // Sim
                 $btnActions .= $btnArchive;
             }
@@ -171,7 +168,7 @@ class AdvertService
 
     public function getArchivedAdverts(
         bool $showBtnRecover    = true,
-        string $classBtnAction  = '', 
+        string $classBtnAction  = '',
         string $classBtnRecover = '',
         string $classBtnDelete  = '',
     ): array {
@@ -180,12 +177,12 @@ class AdvertService
 
         $data = [];
 
-        $btnRecover = '' ;
+        $btnRecover = '';
 
-        foreach($adverts as $advert) {
+        foreach ($adverts as $advert) {
 
             // É para exibir o botão?
-            if($showBtnRecover) {
+            if ($showBtnRecover) {
                 $btnRecover = form_button(
                     [
                         'data-id' => $advert->id,
@@ -246,7 +243,7 @@ class AdvertService
     {
         $advert = $this->advertModel->getAdvertByID($id, $withDeleted);
 
-        if(is_null($advert)) {
+        if (is_null($advert)) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Advert not found');
         }
 
@@ -259,13 +256,13 @@ class AdvertService
         $selected  = [];
 
         $options = [
-            ''                     =>lang('Adverts.label_situation'), //option vazio
-            self::SITUATION_NEW    =>lang('Adverts.text_new'), 
-            self::SITUATION_USED   =>lang('Adverts.text_used'),
+            ''                     => lang('Adverts.label_situation'), //option vazio
+            self::SITUATION_NEW    => lang('Adverts.text_new'),
+            self::SITUATION_USED   => lang('Adverts.text_used'),
         ];
 
         // Estamos criando ou editando um anúncio
-        if(is_null($advertSituation)) {
+        if (is_null($advertSituation)) {
 
             // Estamos criando...
 
@@ -274,7 +271,7 @@ class AdvertService
 
         //Estamos editando um anúncio...
 
-        $selected[] = match($advertSituation) {
+        $selected[] = match ($advertSituation) {
             self::SITUATION_NEW     => self::SITUATION_NEW,
             self::SITUATION_USED    => self::SITUATION_USED,
             default                 => throw new \Exception("Unsupported {$advertSituation}"),
@@ -287,15 +284,14 @@ class AdvertService
     {
 
         try {
-            
+
             $advert->unsetAuxiliaryAttributes();
 
-            if($advert->hasChanged()) {
+            if ($advert->hasChanged()) {
                 $this->advertModel->trySaveAdvert($advert, $protect);
 
                 $this->fireAdvertEvents($advert, $notifyUserIfPublished);
             }
-
         } catch (\Exception $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
 
@@ -303,54 +299,50 @@ class AdvertService
         }
     }
 
-    public function tryStoreAdvertImages(array $images, int $advertID) 
+    public function tryStoreAdvertImages(array $images, int $advertID)
     {
 
         try {
             $advert = $this->getAdvertByID($advertID);
 
             $dataImages = ImageService::storeImages($images, 'adverts', 'advert_id', $advert->id);
-        
+
             $this->advertModel->tryStoreAdvertImages($dataImages, $advert->id);
 
             $this->fireAdvertEventForNewImages($advert);
         } catch (\Exception $e) {
-           die('Error deleting data');
+            die('Error deleting data');
         }
-
     }
 
-    public function tryDeleteAdvertImage(int $advertID, string $image) 
+    public function tryDeleteAdvertImage(int $advertID, string $image)
     {
 
         try {
             $advert = $this->getAdvertByID($advertID);
-        
+
             $this->advertModel->tryDeleteAdvertImage($advert->id, $image);
 
             ImageService::destroyImage('adverts', $image);
         } catch (\Exception $e) {
             die('Error deleting data');
         }
-
     }
 
-    public function tryArchiveAdvert(int $advertID) 
+    public function tryArchiveAdvert(int $advertID)
     {
 
         try {
 
             $advert = $this->getAdvertByID($advertID);
-            
+
             $this->advertModel->tryArchiveAdvert($advert->id);
-        
         } catch (\Exception $e) {
             die('Error archiving data');
         }
-
     }
 
-    public function tryRecoverAdvert(int $advertID) 
+    public function tryRecoverAdvert(int $advertID)
     {
         try {
 
@@ -359,11 +351,9 @@ class AdvertService
             $advert->recover();
 
             $this->trySaveAdvert($advert, protect: false);
-        
         } catch (\Exception $e) {
             die('Error recovering data');
         }
-
     }
 
     public function tryDeleteAdvert(int $advertID)
@@ -371,7 +361,7 @@ class AdvertService
         try {
 
             $advert = $this->getAdvertByID($advertID, withDeleted: true);
-            
+
             $this->advertModel->tryDeleteAdvert($advert->id);
         } catch (\Exception $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
@@ -380,6 +370,27 @@ class AdvertService
         }
     }
 
+    public function getAllAdvertsPaginated(int $perPage = 10, $criteria = []): array
+    {
+        return [
+            'adverts' => $this->advertModel->getAllAdvertsPaginated($perPage, $criteria),
+            'pager'   => $this->advertModel->pager
+        ];
+    }
+
+    public function getAdvertByCode(string $code, bool $ofTheLoggedInUser = false)
+    {
+        $advert = $this->advertModel->getAdvertByCode($code, $ofTheLoggedInUser);
+
+        if (is_null($advert)) {
+
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Advert not found');
+        }
+
+        return $advert;
+    }
+
+    ////-----------------Métodos privados-----------------////
 
     private function fireAdvertEvents(Advert $advert, bool $notifyUserIfPublished)
     {
@@ -387,7 +398,7 @@ class AdvertService
         // Se não tem valor, então estamos criando novo anúncio, portanti, recebe o e-mail do user logado.
         $advert->email = !empty($advert->email) ? $advert->email : $this->user->email;
 
-        if($advert->hasChanged('title') || $advert->hasChanged('description')) {
+        if ($advert->hasChanged('title') || $advert->hasChanged('description')) {
             Events::trigger('nofity_user_advert', $advert->email, "Estamos analisando o seu anúncio {$advert->code}, aguarde...");
             Events::trigger('nofity_manager', "Existem anúncios para serem auditados.");
         }
@@ -395,6 +406,7 @@ class AdvertService
          * @todo notificar o usuário/anunciante de que o anúncio foi publicado
          */
     }
+
     private function fireAdvertEventForNewImages(Advert $advert)
     {
         // Se estiver sendo editado, então o email já possui valor quando da recuperação do mesmo da base.

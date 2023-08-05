@@ -51,6 +51,7 @@ if(file_exists($api = ROOTPATH . 'routes/manager.php')) {
 \Fluent\Auth\Facades\Auth::routes();
 
 $routes->get('image/(:any)/(:any)', 'DetailsController::image/$1/$2', ['as' => 'web.image']);
+$routes->get('detail/(:any)', 'DetailsController::details/$1', ['as' => 'adverts.detail']);
 
 $routes->get('pricing', 'HomeController::pricing', ['as' => 'pricing']);
 

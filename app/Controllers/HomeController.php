@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Requests\GerencianetRequest;
+use App\Services\AdvertService;
 use App\Services\GerencianetService;
 use App\Services\PlanService;
 use App\Services\UserService;
@@ -15,6 +16,7 @@ class HomeController extends BaseController
     private $userService;
     private $gerencianetRequest;
     private $gerencianetService;
+    private $advertService;
 
     public function __construct()
     {
@@ -22,12 +24,19 @@ class HomeController extends BaseController
         $this->userService        = Factories::class(UserService::class);
         $this->gerencianetRequest = Factories::class(GerencianetRequest::class);
         $this->gerencianetService = Factories::class(GerencianetService::class);
+        $this->advertService      = Factories::class(AdvertService::class);
     }
 
     public function index()
     {
+        
+        $advertsForHome = (object)$this->advertService->getAllAdvertsPaginated(perPage: 20);
+
+
         $data = [
-            'title' => 'anúncios recentes'
+            'title'   => 'anúncios recentes',
+            'adverts' => $advertsForHome->adverts,
+            'pager'   => $advertsForHome->pager
         ];
 
         return view('Web/Home/index', $data);
