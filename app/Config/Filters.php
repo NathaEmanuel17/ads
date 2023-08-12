@@ -12,6 +12,7 @@ use App\Filters\AuthFilter;
 use App\Filters\SuperadminFilter;
 use App\Filters\HasSubscriptionFilter;
 use App\Filters\PaymentFilter;
+use App\Filters\AdvertFilter;
 
 class Filters extends BaseConfig
 {
@@ -54,6 +55,11 @@ class Filters extends BaseConfig
             AuthFilter::class,
             HasSubscriptionFilter::class,
             PaymentFilter::class,
+        ],
+
+        'adverts' => [
+            AuthFilter::class, // verificamos se está logado
+            AdvertFilter::class
         ]
     ];
 

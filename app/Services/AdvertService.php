@@ -390,6 +390,12 @@ class AdvertService
         return $advert;
     }
 
+    public function getCitiesFromPublishedAdevrts(int $limit = 5, string $categorySlug = null): array
+    {
+        return $this->advertModel->getCitiesFromPublishedAdevrts($limit, $categorySlug);
+    }
+
+
     ////-----------------Métodos privados-----------------////
 
     private function fireAdvertEvents(Advert $advert, bool $notifyUserIfPublished)

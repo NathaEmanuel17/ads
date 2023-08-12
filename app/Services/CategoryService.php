@@ -234,4 +234,22 @@ class CategoryService
             die($e->getMessage());
         }
     }
+
+    public function getCategoryBySlug(string $categorySlug, bool $withDeleted = false)
+    {
+        $category = $this->categoryModel->withDeleted($withDeleted)->where('slug', $categorySlug)->first();
+
+        if(is_null($category))
+        {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Category not found');
+        }
+
+        return $category;
+    }
+
+    public function getCategoriesFromPublishedAdverts(int $limit = 5): array
+    {
+        
+        return $this->categoryModel->getCategoriesFromPublishedAdverts($limit);
+    }
 }

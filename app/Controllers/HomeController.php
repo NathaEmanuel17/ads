@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Requests\GerencianetRequest;
 use App\Services\AdvertService;
+use App\Services\CategoryService;
 use App\Services\GerencianetService;
 use App\Services\PlanService;
 use App\Services\UserService;
@@ -29,9 +30,10 @@ class HomeController extends BaseController
 
     public function index()
     {
-        
-        $advertsForHome = (object)$this->advertService->getAllAdvertsPaginated(perPage: 20);
+        //d(categories_adverts());
+        //dd(cities_adverts(categorySlug:'relogios'));
 
+        $advertsForHome = (object)$this->advertService->getAllAdvertsPaginated(perPage: 20);
 
         $data = [
             'title'   => 'anúncios recentes',
@@ -104,4 +106,61 @@ class HomeController extends BaseController
         return $this->response->setJSON($this->gerencianetRequest->respondWithMessage('Estamos aguardando a confirmação do pagamento'));
     }
 
+    public function userAdverts(string $userName = null)
+    {
+        $user = $this->userService->getUserBycriteria(['username' => $userName]);
+        
+        $advertsForHome = (object)$this->advertService->getAllAdvertsPaginated(perPage: 10, criteria: ['adverts.user_id' => $user->id]);
+
+        $userName = $user->name ?? $user->username;
+
+        $data = [
+            'title'   => "Anúncios do usuário {$userName}",
+            'adverts' => $advertsForHome->adverts,
+            'pager'   => $advertsForHome->pager
+        ];
+
+        return view('Web/Home/adverts_by_username', $data);   
+    }
+
+    public function category(string $categorySlug = null)
+    {
+        $category = Factories::class(CategoryService::class)->getCategoryBySlug($categorySlug);
+
+        $adverts = (object)$this->advertService->getAllAdvertsPaginated(perPage: 10, criteria: ['categories.slug' => $category->slug]);
+
+
+        $data = [
+            'title'    => "Anúncios do usuário \"{$category->name}\"",
+            'adverts'  => $adverts->adverts,
+            'pager'    => $adverts->pager,
+            'category' => $category
+        ];
+
+        return view('Web/Home/adverts_by_category', $data);   
+
+    }
+
+    public function categoryCity(string $categorySlug = null, $citySlug = null)
+    {
+        $category = Factories::class(CategoryService::class)->getCategoryBySlug($categorySlug);
+
+        $criteria = [
+            'categories.slug' => $category->slug,
+            'adverts.city'  => $citySlug
+        ];
+
+        $adverts = (object)$this->advertService->getAllAdvertsPaginated(perPage: 10, criteria: $criteria);
+
+        $city = array_column($adverts->adverts, 'city')[0];
+
+        $data = [
+            'title'    => "\"{$category->name}\" em \"{$city}\"",
+            'adverts'  => $adverts->adverts,
+            'pager'    => $adverts->pager,
+            'category' => $category
+        ];
+
+        return view('Web/Home/adverts_by_category_city', $data);  
+    }
 }

@@ -51,9 +51,22 @@
 				<div class="widget dashboard-container my-adslist">
 					<h3 class="widget-header"><?php echo lang('Adverts.title_index'); ?></h3>
 					<div class="row">
-						<div class="col-md-12">
-							<button type="button" id="createAdvertBtn" class="btn btn-main-sm add-button float-right mb-4"> + <?php echo lang('App.btn_new'); ?></button>
-						</div>
+
+						<?php if (user_reached_adverts_limit()) : ?>
+
+							<div class="alert alert-info small">
+
+								Você já cadastrou <?php echo count_all_user_adverts() ?> anúncios. Para continuar cadastrando, você precisará migrar de Plano.
+								<a href="<?php echo route_to('pricing') ?>" class="btn btn-sm btn-info mt-3">Quero Migrar</a>
+
+							</div>
+
+						<?php else : ?>
+							<div class="col-md-12">
+								<button type="button" id="createAdvertBtn" class="btn btn-main-sm add-button float-right mb-4"> + <?php echo lang('App.btn_new'); ?></button>
+							</div>
+						<?php endif; ?>
+
 						<div class=" col-md-12">
 							<a href="<?php echo route_to('my.archived.adverts'); ?>" class="btn btn-main-sm btn-outline-info mb-4"><?php echo lang('App.btn_all_archive'); ?></a>
 							<table class="table table-borderless table-striped" id="dataTable">
@@ -89,8 +102,8 @@
 
 <script src="https://cdn.datatables.net/v/bs4/dt-1.13.4/r-2.4.1/datatables.min.js"></script>
 
-<script src="<?php echo site_url('manager_assets/mask/jquery.mask.min.js')?>"></script>
-<script src="<?php echo site_url('manager_assets/mask/app.js')?>"></script>
+<script src="<?php echo site_url('manager_assets/mask/jquery.mask.min.js') ?>"></script>
+<script src="<?php echo site_url('manager_assets/mask/app.js') ?>"></script>
 
 <?php echo $this->include('Dashboard/Adverts/Scripts/_datatable_all') ?>
 <?php echo $this->include('Dashboard/Adverts/Scripts/_get_my_advert') ?>

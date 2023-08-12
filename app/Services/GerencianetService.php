@@ -6,6 +6,7 @@ use Gerencianet\Exception\GerencianetException;
 use Gerencianet\Gerencianet;
 use App\Entities\Plan;
 use App\Entities\Subscription;
+use App\Models\AdvertModel;
 use CodeIgniter\Config\Factories;
 use stdClass;
 
@@ -260,6 +261,7 @@ class GerencianetService
             }
 
             $this->defineSubscriptionSituation($details);
+            
         }
 
         return $this->userSubscription;
@@ -323,7 +325,6 @@ class GerencianetService
             $response = $api->detailCharge($params, []);
 
             return $this->preparesChargeForView($response['data']);
-
         } catch (GerencianetException $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
 
@@ -335,6 +336,49 @@ class GerencianetService
         }
     }
 
+    public function userReachedAdvertsLimit(): bool
+    {
+        // User tem assinatura?
+        if (!$this->userHasSubscription()) {
+            //Não.... então, podemos dizer que ele já alcançou o limte
+            return true;
+        }
+
+        // Consultamos se necessário a assinatura do user logado e populamos a propriedade $userSubscription
+        $this->getUserSubscription();
+
+        // Pode cadastrar ilimitadamente?
+        if(is_null($countFeaturesAdvers = $this->userSubscription->features->adverts)) {
+
+            // Sim... pode cadastrar sem limites
+            return false;
+        }
+
+        // contamos quantos anúncios o user logado possui
+        $countUserAdverts = $this->countAllUserAdverts();
+
+        // O usuário possui um número de anúncios criados maior ou igual o definido no Plano (features) quando da compra?
+        if ($countUserAdverts >= $countFeaturesAdvers) {
+
+            // Sim... o número é maior ou igual. Por tanto já alcançou o limit
+            return true;
+        }
+
+        // Finalmente o user pode contiinuar cadastrando
+        return false;
+    }
+
+    function countAllUserAdverts(bool $withDeleted = true, array $criteria = []): int
+    {
+        if (!$this->userHasSubscription()) {
+
+            return 0;
+        }
+
+        return Factories::models(AdvertModel::class)->countAllUserAdverts($this->user->id, $withDeleted, $criteria);
+    }
+
+    //-------------Métodos privados-------------//
     private function preparesChargeForView(array $chargeData): object
     {
         $chargeData = esc($chargeData);
@@ -346,7 +390,7 @@ class GerencianetService
         $charge->status             = $chargeData['status'];
 
         // é boleto
-        if(isset($chargeData['payment']['banking_billet'])) {
+        if (isset($chargeData['payment']['banking_billet'])) {
 
             $charge->url_pdf   = $chargeData['payment']['banking_billet']['pdf']['charge'];
             $charge->expire_at = date('d-m-Y', strtotime($chargeData['payment']['banking_billet']['expire_at']));

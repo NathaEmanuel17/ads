@@ -321,17 +321,59 @@ class AdvertModel extends MyBaseModel
 
         $advert = $builder->first();
 
-        if(!is_null($advert)){
+        if (!is_null($advert)) {
 
             $advert->images = $this->getAdvertImages($advert->id);
             // recupero as imagens do esmo
         }
 
-        if(!is_null($advert)){
+        if (!is_null($advert)) {
 
             // recupero as perguntas e respostas do mesmo
         }
 
         return $advert;
+    }
+
+    public function getCitiesFromPublishedAdevrts(int $limit = 5, string $categorySlug = null): array
+    {
+        $this->setSQLMode();
+
+        $tableFields = [
+            'adverts.*',
+            'categories.name as category', // para debug
+            'COUNT(adverts.id) as total_adverts'
+        ];
+
+        // recupero apenas os adverts_id da tabela de imagens
+        $advertsIDS = array_column($this->db->table('adverts_images')->select('advert_id')->get()->getResultArray(), 'advert_id');
+
+        $builder = $this;
+
+        $builder->select($tableFields);
+        // $builder->asArray(); // para debug
+        $builder->join('categories', 'categories.id = adverts.category_id');
+        $builder->where('adverts.is_published', true);
+        $builder->where('categories.slug', $categorySlug);
+        $builder->whereIn('adverts.id', $advertsIDS); // apenas em anúncios que possuem imagem
+        $builder->groupBy('adverts.city');
+        $builder->orderBy('total_adverts', 'DESC');
+
+        return $builder->findAll($limit);
+    }
+
+    function countAllUserAdverts(int $userID, bool $withDeleted = true, array $criteria = []): int
+    {
+        $builder = $this;
+
+        if (!empty($criteria)) {
+
+            $builder->where($criteria);
+        }
+
+        $builder->where('adverts.user_id', $userID);
+        $builder->withDeleted($withDeleted);
+
+        return $builder->countAllResults();
     }
 }

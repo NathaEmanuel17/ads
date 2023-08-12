@@ -256,7 +256,9 @@
 
                             <?php endif; ?>
 
-                            <li class="list-inline-item"><a href="<?php echo route_to('adverts.user', $advert->username); ?>" class="btn btn-outline-primary btn-offer">Anúncios de <?php echo $advert->name ?? $advert->username; ?></a></li>
+                            <li class="list-inline-item"><a href="<?php echo route_to('adverts.user', $advert->username); ?>" class="btn btn-outline-primary btn-offer pb-0">Anúncios de
+                            <p style="word-break: break-all !important"><?php echo $advert->name ?? $advert->username; ?></p></a></li>
+                             
 
                         </ul>
                     </div>

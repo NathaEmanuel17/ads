@@ -7,7 +7,7 @@ use App\Entities\Advert;
 use App\Requests\AdvertRequest;
 use App\Services\AdvertService;
 use App\Services\CategoryService;
-use App\Services\ImageService;
+use App\Services\GerencianetService;
 use CodeIgniter\Config\Factories;
 
 class AdvertsUserController extends BaseController

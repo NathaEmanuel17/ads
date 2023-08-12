@@ -23,7 +23,7 @@ class DetailsController extends BaseController
 
         $criteria = [
             'categories.slug' => $advert->category_slug,
-            // 'adverts.code !=' => $advert->code,
+            'adverts.code !=' => $advert->code,
         ];
 
         $advertsFromSameCategory = (object) $this->advertService->getAllAdvertsPaginated(perPage: 10, criteria: $criteria);

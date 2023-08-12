@@ -103,4 +103,9 @@ class UserModel extends Model implements UserProviderInterface
             die('Erro ao excluir a conta');
         }
     }
+
+    public function getUserBycriteria(array $criteria = [])
+    {
+        return $this->select('id', 'name', 'username', 'email')->where($criteria)->first();
+    }
 }

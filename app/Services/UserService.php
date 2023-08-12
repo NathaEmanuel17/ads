@@ -102,4 +102,15 @@ class UserService
             die('Não foi possivel atualizar o seu acesso');
         }
     }
+
+    public function getUserBycriteria(array $criteria = [])
+    {
+        $user = $this->userModel->getUserBycriteria($criteria);
+
+        if(is_null($user)) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('User Not found');
+        }
+
+        return $user;
+    }
 }

@@ -152,21 +152,14 @@
                         <div class="short-popular-category-list text-center">
                             <h2>Popular Category</h2>
                             <ul class="list-inline">
-                                <li class="list-inline-item">
-                                    <a href=""><i class="fa fa-bed"></i> Hotel</a>
+                            
+                            <?php foreach(categories_adverts(10) as $category): ?>
+                               
+                                <li class="list-inline-item mb-2">
+                                    <a href="<?php echo route_to('adverts.category', $category->slug)?>"> <?php echo $category->name?></a>
                                 </li>
-                                <li class="list-inline-item">
-                                    <a href=""><i class="fa fa-grav"></i> Fitness</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a href=""><i class="fa fa-car"></i> Cars</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a href=""><i class="fa fa-cutlery"></i> Restaurants</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a href=""><i class="fa fa-coffee"></i> Cafe</a>
-                                </li>
+                            
+                            <?php endforeach; ?>
                             </ul>
                         </div>
 
@@ -297,20 +290,7 @@
 
     <!-- JAVASCRIPTS -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
-    <!--
-    <script src="<?php //echo site_url('dashboard/'); 
-                    ?>plugins/jquery/jquery.min.js"></script>
-    <script src="<?php //echo site_url('dashboard/'); 
-                    ?>plugins/jquery-ui/jquery-ui.min.js"></script>
-    <script src="<?php //echo site_url('dashboard/'); 
-                    ?>plugins/tether/js/tether.min.js"></script>
-    <script src="<?php //echo site_url('dashboard/'); 
-                    ?>plugins/raty/jquery.raty-fa.js"></script>
-    <script src="<?php //echo site_url('dashboard/'); 
-                    ?>plugins/jquery-nice-select/js/jquery.nice-select.min.js"></script>
-    <script src="<?php //echo site_url('dashboard/'); 
-                    ?>plugins/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"></script>    
--->
+
     <script src="<?php echo site_url('web/'); ?>plugins/bootstrap/dist/js/popper.min.js"></script>
     <script src="<?php echo site_url('web/'); ?>plugins/bootstrap/dist/js/bootstrap.min.js"></script>
 
