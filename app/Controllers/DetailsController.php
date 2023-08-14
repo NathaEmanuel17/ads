@@ -28,21 +28,33 @@ class DetailsController extends BaseController
 
         $advertsFromSameCategory = (object) $this->advertService->getAllAdvertsPaginated(perPage: 10, criteria: $criteria);
 
-         $data = [
+        $data = [
             'title'       => "Detalhes do anúncio {$advert->title}",
             'advert'      => $advert,
             'moreAdverts' => $advertsFromSameCategory->adverts,
             'pager'       => $advertsFromSameCategory->pager,
-         ];
+        ];
 
-         return view('Web/Details/index', $data);
+        return view('Web/Details/index', $data);
     }
 
     public function image(string $image = null, string $sizeImage = 'regular')
     {
         ImageService::showImage('adverts', $image, $sizeImage);
-        
     }
 
+    public function toask(string $code = null)
+    {
+        $advert = $this->advertService->getAdvertByCode($code);
 
+        if ($advert->user_id == service('auth')->user()->id) {
+
+            return redirect()->back()->with('info_ask', 'Esse anúncio pertence a você. Sua pergunta será ignorada');
+        }
+
+        $this->advertService->tryInsertAdvertQuestion($advert, $this->request->getPost('ask'));
+
+        return redirect()->back()->with('success_ask', 'Sua pergunta foi enviada com sucesso');
+        
+    }
 }

@@ -79,7 +79,7 @@ class AdvertService
 
                 // Sim...podemos montar o botão ação
 
-                $routeToViewAdvert = route_to('adverts.details', $advert->code);
+                $routeToViewAdvert = route_to('adverts.detail', $advert->code);
 
                 $btnViewAdvert = form_button(
                     [
@@ -395,6 +395,37 @@ class AdvertService
         return $this->advertModel->getCitiesFromPublishedAdevrts($limit, $categorySlug);
     }
 
+    public function tryInsertAdvertQuestion(Advert $advert, string $question)
+    {
+        try {
+            $this->advertModel->insertAdvertQuestion($advert->id, $question);
+
+            session()->remove('ask');
+            
+            $this->fireAdvertNewQuestion($advert);
+            
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+
+            die('Erro ao realizar a pergunta');
+        }
+    }
+
+    public function tryAnswerAdvertQuestion(int $questionID,Advert $advert, object $request)
+    {
+        try {
+
+            //$this->advertModel->answerAdvertQuestion(questionID: $questionID, advertID: $advert->id, answer: $request->answer);
+            
+            $this->fireAdvertQuestionHasBeenAnswerd($advert, $request->question_owner);
+
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+
+            die('Erro ao realizar a pergunta');
+        }
+    }
+
 
     ////-----------------Métodos privados-----------------////
 
@@ -421,5 +452,17 @@ class AdvertService
 
         Events::trigger('nofity_user_advert', $advert->email, "Estamos analisando as novas imagens do seu anúncio {$advert->code}, aguarde...");
         Events::trigger('nofity_manager', "Existem anúncios para serem auditados, novas imagens foram inseridas...");
+    }
+
+    private function fireAdvertNewQuestion(Advert $advert)
+    {
+        Events::trigger('nofity_user_advert', $advert->email, "seu anúncio {$advert->title}, tem uma nova pergunta...");
+    }
+
+    private function fireAdvertQuestionHasBeenAnswerd(Advert $advert, int $userQuestionID)
+    {
+        $userWhoAskedQuestion = Factories::class(UserService::class)->getUserBycriteria(['id' => $userQuestionID]);
+        dd($userWhoAskedQuestion);
+        Events::trigger('nofity_user_advert', $userWhoAskedQuestion->email, "A pergunta que você fez para o anuncio  {$advert->title}, foi respondida...");
     }
 }

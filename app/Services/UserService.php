@@ -106,7 +106,7 @@ class UserService
     public function getUserBycriteria(array $criteria = [])
     {
         $user = $this->userModel->getUserBycriteria($criteria);
-
+   
         if(is_null($user)) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('User Not found');
         }

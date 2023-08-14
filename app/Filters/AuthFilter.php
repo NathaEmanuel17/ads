@@ -64,6 +64,12 @@ class AuthFilter extends AuthenticationFilter implements FilterInterface
             session()->set('choice', current_url());
         }
 
+        // Foi clicado no botão 'Perguntar' e estava logado?
+        if(url_is('toask*')) {
+            session()->set('details', previous_url()); // aqui é privious_url
+            session()->set('ask', $request->getPost('ask')); // setamos na sessão a pergunta para podermos colocá-la novamente no input do form depois de logar
+        }        
+
         return $this->unauthenticated($request, $guards);
     }
 

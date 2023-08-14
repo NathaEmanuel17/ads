@@ -330,6 +330,7 @@ class AdvertModel extends MyBaseModel
         if (!is_null($advert)) {
 
             // recupero as perguntas e respostas do mesmo
+            $advert->questions = $this->getAdvertQuestions($advert->id);
         }
 
         return $advert;
@@ -375,5 +376,64 @@ class AdvertModel extends MyBaseModel
         $builder->withDeleted($withDeleted);
 
         return $builder->countAllResults();
+    }
+
+    //---------------------Perguntas e respostas---------------------//
+    public function getAdvertQuestions(int $advertID): array
+    {
+        $builder = $this->db->table('adverts_questions');
+        $builder->where('advert_id', $advertID);
+        $builder->orderBy('id', 'DESC');
+        
+        return $builder->get()->getResult();
+    }
+
+    public function insertAdvertQuestion(int $advertID, string $question)
+    {
+        try {
+
+            $this->db->transStart();
+
+            $data = [
+                'advert_id'         => $advertID,
+                'user_question_id'  => $this->user->id,
+                'question'          => esc($question),
+                'created_at'        => date('Y-m-d H:i:s')
+            ];
+
+            $this->db->table('adverts_questions')->insert($data);
+
+            $this->db->transComplete();
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+
+            die('Erro ao realizar a pergunta');
+        }
+    }
+
+    public function answerAdvertQuestion(int $questionID,int $advertID, string $answer)
+    {
+        try {
+
+            $this->db->transStart();
+
+            $criteria = [
+                'id'        => $questionID,
+                'advert_id' => $advertID
+            ];
+
+            $data = [
+                'answer'            => esc($answer),
+                'updated_at'        => date('Y-m-d H:i:s')
+            ];
+
+            $this->db->table('adverts_questions')->where($criteria)->update($data);
+
+            $this->db->transComplete();
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
+
+            die('Erro ao realizar a pergunta');
+        }
     }
 }

@@ -178,5 +178,25 @@ class AdvertsUserController extends BaseController
 
         return $this->response->setJSON($this->advertRequest->respondWithMessage(message: lang('App.success_recovered')));
     }
+
+    public function userAdvertQuestions(string $code = null)
+    {
+        $data = [
+            'advert'        => $advert = $this->advertService->getAdvertByCode(code: $code, ofTheLoggedInUser: true),
+            'hiddens'       => ['_method' => 'PUT', 'code' => $advert->code], // para responder as perguntas    
+        ];
+
+        return view('Dashboard/Adverts/questions', $data);
+    }
     
+    public function userAdvertAnswerQuestions(int $questionID = null)
+    {
+        $request = (object) $this->removeSpoofingFromRequest();
+
+        $advert = $this->advertService->getAdvertByCode(code: $request->code, ofTheLoggedInUser: true);
+        
+        $this->advertService->tryAnswerAdvertQuestion(questionID: $questionID, advert: $advert, request: $request);
+        
+        return redirect()->back()->with('success', lang('App.success_saved'));
+    }
 }

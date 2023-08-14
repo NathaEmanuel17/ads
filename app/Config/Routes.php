@@ -59,7 +59,10 @@ $routes->get('category-city/(:any)/(:any)', 'HomeController::categoryCity/$1/$2'
 $routes->get('pricing', 'HomeController::pricing', ['as' => 'pricing']);
 
 $routes->get('choice/(:num)', 'HomeController::choice/$1', ['as' => 'choice', 'filter' => 'auth_verified']);
+
 $routes->post('pay/(:num)', 'HomeController::attemptPay/$1', ['as' => 'pay']);
+
+$routes->post('toask/(:any)', 'DetailsController::toask/$1', ['as' => 'details.toask', 'filter' => 'auth']); // a resposta será realizada no Dashboard
 
 /*
  * --------------------------------------------------------------------
