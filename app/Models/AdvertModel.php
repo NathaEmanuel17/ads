@@ -230,7 +230,13 @@ class AdvertModel extends MyBaseModel
 
             $this->db->transStart();
 
-            $this->where('user_id', $this->user->id)->delete($advertID);
+            if (!$this->user->isSuperadmin()) {
+
+                $this->where('user_id', $this->user->id)->delete($advertID);
+            } else {
+                $this->delete($advertID);
+
+            }
 
             $this->db->transComplete();
         } catch (\Exception $e) {
@@ -252,6 +258,9 @@ class AdvertModel extends MyBaseModel
                 // É o usuario anunciante... então recuperamos apenas os anúncios dele
 
                 $this->where('user_id', $this->user->id)->delete($advertID, true);
+            } else {
+
+                $this->delete($advertID, true);
             }
 
             $this->db->transComplete();
@@ -384,7 +393,7 @@ class AdvertModel extends MyBaseModel
         $builder = $this->db->table('adverts_questions');
         $builder->where('advert_id', $advertID);
         $builder->orderBy('id', 'DESC');
-        
+
         return $builder->get()->getResult();
     }
 
@@ -411,7 +420,7 @@ class AdvertModel extends MyBaseModel
         }
     }
 
-    public function answerAdvertQuestion(int $questionID,int $advertID, string $answer)
+    public function answerAdvertQuestion(int $questionID, int $advertID, string $answer)
     {
         try {
 

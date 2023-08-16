@@ -87,6 +87,13 @@ class Advert extends Entity
         return "{$this->attributes['city']} - {$this->attributes['state']}";
     }
 
+    public function weMustNotifyThePublication(): bool
+    {
+        $originalIsPublished = (bool) $this->original['is_published'];
+
+        return $originalIsPublished === false && $this->attributes['is_published'];
+    }
+
     // Métodos privados
 
     private function handleWithEmptyImage(string $classImage): string

@@ -27,6 +27,17 @@
         .table {
             width: 100% !important;
         }
+
+        .btn-sm {
+            padding: 6px 20px;
+            font-size: .875rem;
+            line-height: 1.5;
+            border-radius: .2rem;
+        }
+
+        .img-custom {
+            max-width: 60% !important;
+        }
     </style>
 </head>
 
@@ -39,6 +50,7 @@
                 <a class="list-group-item list-group-item-action list-group-item-light p-3" href="<?php echo route_to('manager') ?>"><?php echo lang('App.sidebar.manager.home'); ?></a>
                 <a class="list-group-item list-group-item-action list-group-item-light p-3" href="<?php echo route_to('categories') ?>"><?php echo lang('App.sidebar.manager.categories'); ?></a>
                 <a class="list-group-item list-group-item-action list-group-item-light p-3" href="<?php echo route_to('plans') ?>"><?php echo lang('App.sidebar.manager.plans'); ?></a>
+                <a class="list-group-item list-group-item-action list-group-item-light p-3" href="<?php echo route_to('adverts.manager') ?>"><?php echo lang('App.sidebar.manager.adverts'); ?></a>
             </div>
         </div>
         <!-- Page content wrapper-->
@@ -56,9 +68,9 @@
                                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $language; ?></a>
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
 
-                                    <a class="dropdown-item" href="<?php echo $urls->url_en;?>">English</a>
-                                    <a class="dropdown-item" href="<?php echo $urls->url_es;?>">Español</a>
-                                    <a class="dropdown-item" href="<?php echo $urls->url_pt_br;?>">Português Brasil</a>
+                                    <a class="dropdown-item" href="<?php echo $urls->url_en; ?>">English</a>
+                                    <a class="dropdown-item" href="<?php echo $urls->url_es; ?>">Español</a>
+                                    <a class="dropdown-item" href="<?php echo $urls->url_pt_br; ?>">Português Brasil</a>
 
                                 </div>
                             </li>
@@ -68,7 +80,7 @@
             </nav>
             <!-- Page content-->
 
-            <?php echo $this->include('Manager/Layout/_session_messages');?>
+            <?php echo $this->include('Manager/Layout/_session_messages'); ?>
             <?php echo $this->renderSection('content'); ?>
 
 

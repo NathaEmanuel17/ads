@@ -32,6 +32,7 @@ return [
             'home'              => 'Home',
             'categories'        => 'Categorias',
             'plans'             => 'Planos de Assinaturas',
+            'adverts'           => 'Anúncios',
         ],
 
         'dashboard' => [

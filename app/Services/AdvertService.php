@@ -415,7 +415,7 @@ class AdvertService
     {
         try {
 
-            //$this->advertModel->answerAdvertQuestion(questionID: $questionID, advertID: $advert->id, answer: $request->answer);
+            $this->advertModel->answerAdvertQuestion(questionID: $questionID, advertID: $advert->id, answer: $request->answer);
             
             $this->fireAdvertQuestionHasBeenAnswerd($advert, $request->question_owner);
 
@@ -439,9 +439,11 @@ class AdvertService
             Events::trigger('nofity_user_advert', $advert->email, "Estamos analisando o seu anúncio {$advert->code}, aguarde...");
             Events::trigger('nofity_manager', "Existem anúncios para serem auditados.");
         }
-        /**
-         * @todo notificar o usuário/anunciante de que o anúncio foi publicado
-         */
+       
+        if ($notifyUserIfPublished) {
+            
+            $this->fireAdvertPublished($advert);
+        }
     }
 
     private function fireAdvertEventForNewImages(Advert $advert)
@@ -462,7 +464,15 @@ class AdvertService
     private function fireAdvertQuestionHasBeenAnswerd(Advert $advert, int $userQuestionID)
     {
         $userWhoAskedQuestion = Factories::class(UserService::class)->getUserBycriteria(['id' => $userQuestionID]);
-        dd($userWhoAskedQuestion);
+     
         Events::trigger('nofity_user_advert', $userWhoAskedQuestion->email, "A pergunta que você fez para o anuncio  {$advert->title}, foi respondida...");
+    }
+
+    private function fireAdvertPublished(Advert $advert)
+    {
+        if ($advert->weMustNotifyThePublication())  {
+
+            Events::trigger('nofity_user_advert', $advert->email, "Seu anúncio {$advert->title} foi publicado...");
+        }
     }
 }
