@@ -38,6 +38,26 @@
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
 
+    <link rel="stylesheet" href="<?php echo site_url('web/auto-complete/jquery-ui.css'); ?>" />
+
+    <style>
+        /* Muda o backgroud do autocomplete */
+        .ui-menu-item .ui-menu-item-wrapper.ui-state-active {
+            background: #fff !important;
+            color: #007bff !important;
+            border: none;
+
+        }
+
+
+        /**
+         * Para a imagem do autocomplete
+         */
+        .image-autocomplete {
+            max-width: 80px !important;
+        }
+    </style>
+    
     <?php echo $this->renderSection('styles'); ?>
 
 </head>
@@ -152,14 +172,14 @@
                         <div class="short-popular-category-list text-center">
                             <h2>Popular Category</h2>
                             <ul class="list-inline">
-                            
-                            <?php foreach(categories_adverts(10) as $category): ?>
-                               
-                                <li class="list-inline-item mb-2">
-                                    <a href="<?php echo route_to('adverts.category', $category->slug)?>"> <?php echo $category->name?></a>
-                                </li>
-                            
-                            <?php endforeach; ?>
+
+                                <?php foreach (categories_adverts(10) as $category) : ?>
+
+                                    <li class="list-inline-item mb-2">
+                                        <a href="<?php echo route_to('adverts.category', $category->slug) ?>"> <?php echo $category->name ?></a>
+                                    </li>
+
+                                <?php endforeach; ?>
                             </ul>
                         </div>
 
@@ -168,19 +188,19 @@
                     <div class="advance-search">
                         <form action="#">
                             <div class="row">
-                                <!-- Store Search -->
-                                <div class="col-lg-6 col-md-12">
-                                    <div class="block d-flex">
-                                        <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="search" placeholder="Search for store">
+
+                                <div class="col-lg-12 col-md-12">
+
+                                    <div class="ui-widget">
+
+                                        <div class="block d-flex">
+                                            <input type="text" id="query" name="query" class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder="O que você está procurando?">
+                                        </div>
+
                                     </div>
+
                                 </div>
-                                <div class="col-lg-6 col-md-12">
-                                    <div class="block d-flex">
-                                        <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="search" placeholder="Search for store">
-                                        <!-- Search Button -->
-                                        <button class="btn btn-main">SEARCH</button>
-                                    </div>
-                                </div>
+
                             </div>
                         </form>
 
@@ -302,6 +322,8 @@
 
     <script src="<?php echo site_url('manager_assets/toastr/toastr.min.js'); ?>"></script>
     <script src="<?php echo site_url('web/loadingoverlay/loadingoverlay.min.js'); ?>"></script>
+
+    <?php echo $this->include('Web/Layout/Scripts/_autocomplete'); ?>
 
     <?php echo $this->renderSection('scripts'); ?>
 

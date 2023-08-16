@@ -401,9 +401,8 @@ class AdvertService
             $this->advertModel->insertAdvertQuestion($advert->id, $question);
 
             session()->remove('ask');
-            
+
             $this->fireAdvertNewQuestion($advert);
-            
         } catch (\Exception $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
 
@@ -411,14 +410,13 @@ class AdvertService
         }
     }
 
-    public function tryAnswerAdvertQuestion(int $questionID,Advert $advert, object $request)
+    public function tryAnswerAdvertQuestion(int $questionID, Advert $advert, object $request)
     {
         try {
 
             $this->advertModel->answerAdvertQuestion(questionID: $questionID, advertID: $advert->id, answer: $request->answer);
-            
-            $this->fireAdvertQuestionHasBeenAnswerd($advert, $request->question_owner);
 
+            $this->fireAdvertQuestionHasBeenAnswerd($advert, $request->question_owner);
         } catch (\Exception $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
 
@@ -426,7 +424,23 @@ class AdvertService
         }
     }
 
+    public function getAllAdvertsByTerm(string $term): array
+    {
+        $adverts = $this->advertModel->getAllAdvertsByTerm($term);
 
+        $data = [];
+
+        foreach ($adverts as $advert) {
+
+            $data[] = [
+                'code'  => $advert->code,
+                'value' => $advert->title,
+                'label' => $advert->image(classImage: 'image-autocomplete', sizeImage: 'small') . ' ' . $advert->title,
+            ];
+        }
+
+        return $data;
+    }
     ////-----------------Métodos privados-----------------////
 
     private function fireAdvertEvents(Advert $advert, bool $notifyUserIfPublished)
@@ -439,9 +453,9 @@ class AdvertService
             Events::trigger('nofity_user_advert', $advert->email, "Estamos analisando o seu anúncio {$advert->code}, aguarde...");
             Events::trigger('nofity_manager', "Existem anúncios para serem auditados.");
         }
-       
+
         if ($notifyUserIfPublished) {
-            
+
             $this->fireAdvertPublished($advert);
         }
     }
@@ -464,13 +478,13 @@ class AdvertService
     private function fireAdvertQuestionHasBeenAnswerd(Advert $advert, int $userQuestionID)
     {
         $userWhoAskedQuestion = Factories::class(UserService::class)->getUserBycriteria(['id' => $userQuestionID]);
-     
+
         Events::trigger('nofity_user_advert', $userWhoAskedQuestion->email, "A pergunta que você fez para o anuncio  {$advert->title}, foi respondida...");
     }
 
     private function fireAdvertPublished(Advert $advert)
     {
-        if ($advert->weMustNotifyThePublication())  {
+        if ($advert->weMustNotifyThePublication()) {
 
             Events::trigger('nofity_user_advert', $advert->email, "Seu anúncio {$advert->title} foi publicado...");
         }

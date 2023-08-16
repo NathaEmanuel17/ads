@@ -30,7 +30,7 @@
 
 
     <!-- Para o autocomplete -->
-    <link rel="stylesheet" href="<?php echo site_url('web/plugins/auto-complete/jquery-ui.css'); ?>" />
+    <link rel="stylesheet" href="<?php echo site_url('web/auto-complete/jquery-ui.css'); ?>" />
 
 
     <!-- CUSTOM CSS -->
@@ -304,7 +304,7 @@
     <script src="<?php echo site_url('web/'); ?>plugins/smoothscroll/SmoothScroll.min.js"></script>
 
 
-    <?php //echo $this->include('Web/Layout/Scripts/_autocomplete'); 
+    <?php echo $this->include('Web/Layout/Scripts/_autocomplete'); 
     ?>
 
 

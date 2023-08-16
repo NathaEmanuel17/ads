@@ -445,4 +445,30 @@ class AdvertModel extends MyBaseModel
             die('Erro ao realizar a pergunta');
         }
     }
+
+    //---------------------Pesquisa por autocomplete---------------------//
+
+    public function getAllAdvertsByTerm(string $term = null): array
+    {
+        $this->setSQLMode();
+
+        $builder = $this;
+
+        $tableFields = [
+            'adverts.id',
+            'adverts.code',
+            'adverts.title',
+            'adverts_images.image as images',
+        ];
+
+        $builder->select($tableFields);
+        $builder->join('adverts_images', 'adverts_images.advert_id = adverts.id', 'LEFT'); //Nem todos os anuncios terão imagens
+        $builder->groupBy('adverts.id'); // para não repetir registros
+        $builder->orderBy('adverts.id', 'DESC');
+        $builder->where('is_published', true); 
+        $builder->like('title', $term, 'both');
+
+        return $builder->findAll();
+    }
+
 }

@@ -163,4 +163,14 @@ class HomeController extends BaseController
 
         return view('Web/Home/adverts_by_category_city', $data);  
     }
+
+    public function search()
+    {
+        if (!$this->request->isAJAX()) {
+
+            return redirect()->back();
+        }
+
+        return $this->response->setJSON($this->advertService->getAllAdvertsByTerm($this->request->getGet('term')));
+    }
 }

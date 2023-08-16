@@ -64,6 +64,7 @@ $routes->post('pay/(:num)', 'HomeController::attemptPay/$1', ['as' => 'pay']);
 
 $routes->post('toask/(:any)', 'DetailsController::toask/$1', ['as' => 'details.toask', 'filter' => 'auth']); // a resposta será realizada no Dashboard
 
+$routes->get('search', 'HomeController::search', ['as' => 'adverts.search']); //autocomplete dos templates main a adverts
 /*
  * --------------------------------------------------------------------
  * Additional Routing
