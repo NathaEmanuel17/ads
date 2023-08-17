@@ -49,7 +49,7 @@ class Advert extends Entity
         return "{$this->attributes['street']} - {$number} - {$this->attributes['neighborhood']} - {$this->attributes['zipcode']} - {$this->attributes['city']} - {$this->attributes['state']}";
     }
 
-    public function image(string $classImage = '', string $sizeImage = 'regular'): string
+    public function image(string $classImage = '', string $sizeImage = 'regular')
     {
         
         if(empty($this->attributes['images'])) {
@@ -133,7 +133,7 @@ class Advert extends Entity
     {
         $images = [];
 
-        foreach( $this->attributes['title'] as $image) {
+        foreach( $this->attributes['images'] as $image) {
            
             $images[] = $this->buildRouteForImageAPI($image->image);
         }
@@ -142,6 +142,6 @@ class Advert extends Entity
    
     private function buildRouteForImageAPI(string $image): string
     {
-        return site_url("image/{$image}");
+        return route_to('web.image', $image, 'small');
     }
 }

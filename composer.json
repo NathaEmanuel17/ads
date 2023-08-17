@@ -7,6 +7,7 @@
     "require": {
         "php": "^7.4 || ^8.0",
         "agungsugiarto/codeigniter4-authentication": "^2.0",
+        "agungsugiarto/codeigniter4-authentication-jwt": "dev-master",
         "codeigniter4/framework": "^4.0",
         "gerencianet/gerencianet-sdk-php": "4.1.1"
     },

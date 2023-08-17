@@ -16,7 +16,7 @@ class SubscriptionService
     public function __construct()
     {
         $this->subscriptionModel = Factories::models(SubscriptionModel::class);
-        $this->user              = service('auth')->user();
+        $this->user = service('auth')->user() ?? auth('api')->user();
     }
 
     public function tryInsertSubscription(Plan $choosenPlan, array $data): bool

@@ -51,6 +51,10 @@ class Auth extends \Fluent\Auth\Config\Auth
             'driver'   => TokenAdapter::class,
             'provider' => 'users',
         ],
+        'api' => [
+            'driver' => \Fluent\JWTAuth\JWTGuard::class,
+            'provider' => 'users',
+        ],
         // etc your implementation
     ];
 

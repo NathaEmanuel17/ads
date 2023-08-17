@@ -16,10 +16,8 @@ class AdvertService
 
     public function __construct()
     {
-        /*
-        * @todo alterar para auth('api')->user()...... quando estivermos com a API
-        */
-        $this->user = service('auth')->user();
+
+        $this->user = service('auth')->user() ?? auth('api')->user();
 
         $this->advertModel = Factories::models(AdvertModel::class);
     }
@@ -356,13 +354,19 @@ class AdvertService
         }
     }
 
-    public function tryDeleteAdvert(int $advertID)
+    public function tryDeleteAdvert(int $advertID, bool $wantValidadeAdvert = true)
     {
         try {
 
-            $advert = $this->getAdvertByID($advertID, withDeleted: true);
+            if ($wantValidadeAdvert) {
 
-            $this->advertModel->tryDeleteAdvert($advert->id);
+                $advert = $this->getAdvertByID($advertID, withDeleted: true);
+                $this->advertModel->tryDeleteAdvert($advert->id);
+                return true;
+            }
+
+            $this->advertModel->tryDeleteAdvert($advertID);
+            return true;
         } catch (\Exception $e) {
             log_message('error', '[ERROR] {exception}', ['exception' => $e]);
 
@@ -441,6 +445,48 @@ class AdvertService
 
         return $data;
     }
+
+    public function getAllAdvertsForUserAPI(int $perPage = null, int $page = null) : array
+    {
+        $adverts = $this->advertModel->getAllAdvertsForUserAPI($perPage, $page);
+        $pager   = (!empty($adverts) ? $this->advertModel->pager->getDetails() : []);
+
+        if (empty($adverts)) {
+
+            // O anunciante logado possiui algum anúncio?
+            return [
+                'adverts' => [],
+                'pager'   => $pager
+            ];
+        }
+
+        $data = [];
+
+        foreach ($adverts as $advert) {
+
+            $data[] = [
+                'id'              => $advert->id,
+                'belongs_to'      => $advert->username,
+                'images'          => $advert->image(),
+                'title'           => $advert->title,
+                'code'            => $advert->code,
+                'price'           => $advert->price,
+                'category'        => $advert->category,
+                'category_id'     => $advert->category_id,
+                'category_slug'   => $advert->category_slug,
+                'is_published'    => $advert->is_published,
+                'address'         => $advert->address(),
+                'created_at'      => $advert->created_at,
+                'updated_at'      => $advert->updated_at,
+            ];
+        }
+
+        return [
+            'adverts' => $data,
+            'pager'   => $pager
+        ];
+    }
+
     ////-----------------Métodos privados-----------------////
 
     private function fireAdvertEvents(Advert $advert, bool $notifyUserIfPublished)

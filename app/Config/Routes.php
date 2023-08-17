@@ -43,7 +43,7 @@ if(file_exists($dashboard = ROOTPATH . 'routes/dashboard.php')) {
 }
 
 //Rotas para a API REST
-if(file_exists($api = ROOTPATH . 'routes/manager.php')) {
+if(file_exists($api = ROOTPATH . 'routes/api.php')) {
     require $api;
 }
 
@@ -65,6 +65,8 @@ $routes->post('pay/(:num)', 'HomeController::attemptPay/$1', ['as' => 'pay']);
 $routes->post('toask/(:any)', 'DetailsController::toask/$1', ['as' => 'details.toask', 'filter' => 'auth']); // a resposta será realizada no Dashboard
 
 $routes->get('search', 'HomeController::search', ['as' => 'adverts.search']); //autocomplete dos templates main a adverts
+
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing

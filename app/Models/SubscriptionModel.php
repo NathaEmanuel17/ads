@@ -13,11 +13,7 @@ class SubscriptionModel extends MyBaseModel
     {
         parent::__construct(); //construtor do Model que é pai do MyBaseModel
 
-        /**
-         * @todo $this->user = service('auth')->user() ?? auth('api')->user();   // allterar quando estivermos com API 
-         */
-
-        $this->user = service('auth')->user();
+        $this->user = service('auth')->user() ?? auth('api')->user();
     }
 
 

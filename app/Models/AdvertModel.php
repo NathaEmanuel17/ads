@@ -12,11 +12,7 @@ class AdvertModel extends MyBaseModel
     {
         parent::__construct();
 
-        /**
-         * @todo $this->user = service('auth')->user() ?? auth('api')->user();   // allterar quando estivermos com API 
-         */
-
-        $this->user = service('auth')->user();
+        $this->user = service('auth')->user() ?? auth('api')->user();
     }
 
     protected $DBGroup          = 'default';
@@ -235,7 +231,6 @@ class AdvertModel extends MyBaseModel
                 $this->where('user_id', $this->user->id)->delete($advertID);
             } else {
                 $this->delete($advertID);
-
             }
 
             $this->db->transComplete();
@@ -465,10 +460,43 @@ class AdvertModel extends MyBaseModel
         $builder->join('adverts_images', 'adverts_images.advert_id = adverts.id', 'LEFT'); //Nem todos os anuncios terão imagens
         $builder->groupBy('adverts.id'); // para não repetir registros
         $builder->orderBy('adverts.id', 'DESC');
-        $builder->where('is_published', true); 
+        $builder->where('is_published', true);
         $builder->like('title', $term, 'both');
 
         return $builder->findAll();
     }
 
+    //---------------------API---------------------//
+    public function getAllAdvertsForUserAPI(int $perPage = null, int $page = null)
+    {
+        $this->setSQLMode();
+
+        $builder = $this;
+
+        $tableFields = [
+            'adverts.*',
+            'categories.name AS category',
+            'categories.slug AS category_slug',
+            'users.username' // quem é o dono anúncios
+        ];
+
+        $builder->select($tableFields);
+
+        $builder->join('categories', 'categories.id = adverts.category_id');
+        $builder->join('users', 'users.id = adverts.user_id');
+        $builder->where('adverts.user_id', $this->user->id);
+        $builder->groupBy('adverts.id'); // para não repetir registros
+        $builder->orderBy('adverts.id', 'DESC');;
+
+        $adverts = $this->paginate(perPage: $perPage, page: $page);
+
+        if (!empty($adverts)) {
+
+            foreach ($adverts as $advert) {
+
+                $advert->images = $this->getAdvertImages($advert->id);
+            }
+        }
+        return $adverts;
+    }
 }

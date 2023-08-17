@@ -38,7 +38,8 @@ class GerencianetService
             'time'             => env('GERENCIANET_TIMEOUT')
         ];
 
-        $this->user                = service('auth')->user();
+        $this->user = service('auth')->user() ?? auth('api')->user();
+        
         $this->subscriptionService = Factories::class(SubscriptionService::class);
     }
 
@@ -261,7 +262,6 @@ class GerencianetService
             }
 
             $this->defineSubscriptionSituation($details);
-            
         }
 
         return $this->userSubscription;
@@ -348,7 +348,7 @@ class GerencianetService
         $this->getUserSubscription();
 
         // Pode cadastrar ilimitadamente?
-        if(is_null($countFeaturesAdvers = $this->userSubscription->features->adverts)) {
+        if (is_null($countFeaturesAdvers = $this->userSubscription->features->adverts)) {
 
             // Sim... pode cadastrar sem limites
             return false;

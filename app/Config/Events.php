@@ -65,3 +65,5 @@ Events::on('nofity_user_advert', function($email, $message) {
 Events::on('nofity_manager', function($message) {
     (new \App\Notifications\ManagerNotification($message))->send();
 });
+
+Events::on('pre_system', [\App\Providers\AuthServiceProvider::class, 'register']);
