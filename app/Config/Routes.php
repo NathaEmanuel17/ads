@@ -30,6 +30,8 @@ $routes->set404Override();
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'HomeController::index', ['as' => 'web.home']);
+// $routes->get('migrate', 'MigrateController::index', ['as' => 'migrate']);
+// $routes->get('seed', 'MigrateController::seed', ['as' => 'seed']);
 
 
 //Rotas para o manager
