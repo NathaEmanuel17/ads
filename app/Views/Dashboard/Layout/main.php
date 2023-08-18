@@ -36,6 +36,8 @@
   <![endif]-->
 
     <link href="<?php echo site_url('manager_assets/toastr/toastr.min.css'); ?>" rel="stylesheet" />
+    <!-- Para o autocomplete -->
+    <link rel="stylesheet" href="<?php echo site_url('web/auto-complete/jquery-ui.css'); ?>" />
 
 
     <style>
@@ -45,10 +47,28 @@
             line-height: 1.5;
             border-radius: .2rem;
         }
+
         .img-custom {
             max-width: 60% !important;
         }
+
+        /* Muda o backgroud do autocomplete */
+        .ui-menu-item .ui-menu-item-wrapper.ui-state-active {
+            background: #fff !important;
+            color: #007bff !important;
+            border: none;
+
+        }
+
+
+        /**
+         * Para a imagem do autocomplete
+         */
+        .image-autocomplete {
+            max-width: 80px !important;
+        }
     </style>
+
     <?php echo $this->renderSection('styles'); ?>
 
 </head>
@@ -152,19 +172,11 @@
                     <div class="advance-search">
                         <form>
                             <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <input type="text" class="form-control" id="inputtext4" placeholder="What are you looking for">
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <input type="text" class="form-control" id="inputCategory4" placeholder="Category">
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <input type="text" class="form-control" id="inputLocation4" placeholder="Location">
-                                </div>
-                                <div class="form-group col-md-2">
 
-                                    <button type="submit" class="btn btn-primary">Search Now</button>
+                                <div class="form-group col-md-12 ui-widget">
+                                    <input type="text" class="form-control" id="query" name="query" placeholder="O que está procurando?">
                                 </div>
+
                             </div>
                         </form>
                     </div>
@@ -275,6 +287,9 @@
     <script src="<?php echo site_url('web/'); ?>plugins/fancybox/jquery.fancybox.pack.js"></script>
     <script src="<?php echo site_url('web/'); ?>plugins/smoothscroll/SmoothScroll.min.js"></script>
     <script src="<?php echo site_url('web/'); ?>js/scripts.js"></script>
+
+    <?php echo $this->include('Web/Layout/Scripts/_autocomplete'); ?>
+
 
     <script src="<?php echo site_url('manager_assets/toastr/toastr.min.js'); ?>"></script>
 

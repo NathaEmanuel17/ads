@@ -18,9 +18,9 @@
                 <li class="<?php echo url_is("{$locale}/dashboard/adverts/my") ? 'active' : ''; ?>">
                     <a class="btn-gn" href="<?php echo route_to('my.adverts'); ?>"><i class="fa fa-user"></i><?php echo lang('App.sidebar.dashboard.my_adverts'); ?></a>
                 </li>
-                <li><a href=""><i class="fa fa-bookmark-o"></i> Favourite Ads <span>5</span></a></li>
-                <li><a href=""><i class="fa fa-file-archive-o"></i>Archived Ads <span>12</span></a></li>
-                <li><a href=""><i class="fa fa-bolt"></i> Pending Approval<span>23</span></a></li>
+                <li class="<?php echo url_is("{$locale}/dashboard/adverts/my-archived") ? 'active' : ''; ?>">
+                    <a class="btn-gn" href="<?php echo route_to('my.archived.adverts'); ?>"><i class="fa fa-file-archive-o"></i><?php echo lang('App.btn_all_archive'); ?></a>
+                </li>
 
                 <?php echo form_open('logout'); ?>
                 <button type="submit" class="btn btn-default bg-white p-0 py-2 pl-2 text-dark"><i class="fa fa-cog"></i> <?php echo lang('App.btn_logout'); ?></button>

@@ -21,16 +21,54 @@
 		<!-- Row Start -->
 		<div class="row">
 
-		<?php echo $this->include('Dashboard/Layout/_sidebar');?>
+			<?php echo $this->include('Dashboard/Layout/_sidebar'); ?>
 
 			<div class="col-md-10 offset-md-1 col-lg-8 offset-lg-0">
 				<!-- Recently Favorited -->
 				<div class="widget dashboard-container my-adslist">
-					<h3 class="widget-header"><?php echo lang('App.sidebar.dashboard.dashboard');?></h3>
+					<h3 class="widget-header"><?php echo lang('App.sidebar.dashboard.dashboard'); ?></h3>
+
+					<div class="card-deck">
+
+						<div class="card">
+							<div class="card-body text-center">
+								<i class="fa fa-database text-primary fa-2x mb-2"></i>
+								<p class="card-text"><?php echo lang('Adverts.text_total_adverts'); ?></p><br />
+								<span class="badge badge-primary p-2 px-3 mt-2"><?php echo $totalUSerAdverts;?></span>
+							</div>
+						</div>
+
+						<div class="card">
+							<div class="card-body text-center">
+								<i class="fa fa-check-circle text-success fa-2x mb-2"></i>
+								<p class="card-text"><?php echo lang('Adverts.text_total_adverts_published'); ?></p><br />
+								<span class="badge badge-success p-2 px-3 mt-2"><?php echo $totalPublishedAdverts ?></span>
+							</div>
+						</div>
+
+						<div class="card">
+							<div class="card-body text-center">
+								<i class="fa fa-lock text-warning fa-2x mb-2"></i>
+								<p class="card-text"><?php echo lang('Adverts.text_total_waiting_approval'); ?></p><br />
+								<span class="badge badge-warning p-2 px-3 mt-2"><?php echo $totalUserAdvertsWaitingApproval ?></span>
+							</div>
+						</div>
+
+						<div class="card">
+							<div class="card-body text-center">
+								<i class="fa fa-archive text-info fa-2x mb-2"></i>
+								<p class="card-text"><?php echo lang('Adverts.text_total_archive'); ?></p><br />
+								<span class="badge badge-primary p-2 px-3 mt-2"><?php echo $totalUserArchivedAdverts?></span>
+							</div>
+						</div>
+
+					</div>
+
 				</div>
 			</div>
 		</div>
-		<!-- Row End -->
+	</div>
+	<!-- Row End -->
 	</div>
 	<!-- Container End -->
 </section>
